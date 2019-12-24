@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:clipToPadding="false"
+    android:orientation="vertical"
+    android:padding="@dimen/padding_std"
+    tools:context=".ui.fragments.search.SearchFragment">
+
+    <EditText
+        android:id="@+id/search_bar_et"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/padding_std"
+        android:background="@color/colorDarkGray"
+        android:clickable="true"
+        android:drawableStart="@drawable/ic_search_light_gray"
+        android:drawablePadding="@dimen/padding_std"
+        android:elevation="@dimen/padding_std"
+        android:focusable="true"
+        android:fontFamily="@font/raleway"
+        android:gravity="start|center_vertical"
+        android:hint="@string/search_txt"
+        android:inputType="textMultiLine"
+        android:minHeight="@dimen/clickable_std"
+        android:paddingStart="@dimen/padding_std"
+        android:paddingEnd="@dimen/padding_std"
+        android:textColor="@color/colorWhite"
+        android:textColorHint="@color/colorLightGray"
+        android:textSize="@dimen/input_btn_subtitle_txt" />
+
+
+</LinearLayout>

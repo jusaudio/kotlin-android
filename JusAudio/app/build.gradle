@@ -18,6 +18,12 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [
+                        "room.incremental":"true"]
+            }
+        }
     }
     buildTypes {
         release {
@@ -30,6 +36,9 @@ android {
         sourceCompatibility = 1.8
         targetCompatibility = 1.8
     }
+
+
+
 
     kotlinOptions {
         jvmTarget = "1.8"
