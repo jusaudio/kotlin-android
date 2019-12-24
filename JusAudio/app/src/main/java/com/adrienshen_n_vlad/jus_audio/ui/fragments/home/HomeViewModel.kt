@@ -1,4 +1,4 @@
-package com.adrienshen_n_vlad.jus_audio.ui.fragments
+package com.adrienshen_n_vlad.jus_audio.ui.fragments.home
 
 import androidx.lifecycle.ViewModel
 
