@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="padding_std">8dp</dimen>
+    <dimen name="padding_md">16dp</dimen>
+
+    <dimen name="clickable_std">48dp</dimen>
+    <dimen name="clickable_padded">64dp</dimen>
+
+    <dimen name="paragraph_txt">14sp</dimen>
+    <dimen name="input_btn_subtitle_txt">16sp</dimen>
+
+    <dimen name="thumbnail_size_std">144dp</dimen>
+</resources>
