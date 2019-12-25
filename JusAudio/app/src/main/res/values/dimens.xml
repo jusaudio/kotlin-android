@@ -9,5 +9,5 @@
     <dimen name="paragraph_txt">14sp</dimen>
     <dimen name="input_btn_subtitle_txt">16sp</dimen>
 
-    <dimen name="thumbnail_size_std">144dp</dimen>
+    <dimen name="cover_size">108dp</dimen>
 </resources>
