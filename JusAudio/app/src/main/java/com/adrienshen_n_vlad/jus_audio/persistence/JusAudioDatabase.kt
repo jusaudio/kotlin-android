@@ -12,11 +12,15 @@ import com.adrienshen_n_vlad.jus_audio.persistence.entities.PlayHistory
 import com.adrienshen_n_vlad.jus_audio.persistence.entities.RecommendedAudios
 import com.adrienshen_n_vlad.jus_audio.utility_classes.JusAudioConstants.DATABASE_NAME
 
-@Database(entities = [JusAudios::class, PlayHistory::class, RecommendedAudios::class], version = 1, exportSchema = false)
+@Database(
+    entities = [JusAudios::class, PlayHistory::class, RecommendedAudios::class],
+    version = 1,
+    exportSchema = false
+)
 abstract class JusAudioDatabase : RoomDatabase() {
     abstract fun jusAudiosDao(): JusAudiosDao
-    abstract fun playHistoryDao() : PlayHistoryDao
-    abstract fun recommendedAudiosDao() : RecommendedAudiosDao
+    abstract fun playHistoryDao(): PlayHistoryDao
+    abstract fun recommendedAudiosDao(): RecommendedAudiosDao
 
     companion object {
         // Singleton prevents multiple instances of database opening at the

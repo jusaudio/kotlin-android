@@ -18,4 +18,5 @@ object JusAudioConstants {
     const val AUDIO_STREAM_URL = "audio_stream_url"
     const val AUDIO_COVER_THUMB_URL = "audio_cover_thumbnail_url"
     const val AUDIO_IS_FAVORITE = "audio_is_fav"
+    const val DEFAULT_LANG_ID = 0
 }

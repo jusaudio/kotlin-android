@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="@dimen/padding_std">
+
+    <ImageView
+        android:id="@+id/audio_cover_iv"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/cover_size"
+        android:layout_marginTop="@dimen/padding_md"
+        android:adjustViewBounds="true"
+        android:background="@color/colorDarkGray"
+        android:clickable="true"
+        android:contentDescription="@string/audio_cover_img_desc"
+        android:elevation="@dimen/padding_std"
+        android:focusable="true"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_music_note_black_24dp" />
+
+    <TextView
+        android:id="@+id/audio_title_tv"
+        android:layout_width="@dimen/cover_size"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/padding_std"
+        android:gravity="center"
+        android:paddingStart="@dimen/padding_std"
+        android:paddingEnd="@dimen/padding_std"
+        android:textColor="@color/colorWhite"
+        android:textSize="@dimen/input_btn_subtitle_txt"
+        android:fontFamily="@font/alegreya" />
+
+
+    <TextView
+        android:id="@+id/audio_author_tv"
+        android:layout_width="@dimen/cover_size"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/padding_std"
+        android:gravity="center"
+        android:paddingStart="@dimen/padding_std"
+        android:paddingEnd="@dimen/padding_std"
+        android:textColor="@color/colorLightGray"
+        android:textSize="@dimen/paragraph_txt"
+        android:fontFamily="@font/raleway" />
+
+</LinearLayout>

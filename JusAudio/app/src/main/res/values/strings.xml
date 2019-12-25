@@ -7,4 +7,5 @@
     <string name="menu_clickable_iv_desc">View Menu</string>
     <string name="recommendations_title_txt">Recommended</string>
     <string name="coming_next_title_txt">Up Next</string>
+    <string name="audio_cover_img_desc">Album Cover</string>
 </resources>
