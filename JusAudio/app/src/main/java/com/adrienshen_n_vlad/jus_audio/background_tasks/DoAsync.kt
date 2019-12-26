@@ -1,6 +1,7 @@
 package com.adrienshen_n_vlad.jus_audio.background_tasks
 
 import android.os.AsyncTask
+import android.util.Log
 
 class DoAsync(private val resultCallback: AsyncOperationListener? = null) :
     AsyncTask<() -> Any?, Void, Any?>() {
@@ -13,9 +14,14 @@ class DoAsync(private val resultCallback: AsyncOperationListener? = null) :
         )
     }
 
-    override fun doInBackground(vararg functions: (() -> Any?)?): Any? {
-        return functions[0]!!()
-    }
+    override fun doInBackground(vararg functions: (() -> Any?)?): Any? =
+        try {
+            functions[0]!!()
+        } catch (exc: Exception) {
+            Log.d("DoAsync", "Exception Thrown, ${exc.message}", exc.cause)
+            null
+        }
+
 
     override fun onPostExecute(result: Any?) {
         super.onPostExecute(result)

@@ -10,4 +10,5 @@
     <dimen name="input_btn_subtitle_txt">16sp</dimen>
 
     <dimen name="cover_size">108dp</dimen>
+    <dimen name="icon_std">24dp</dimen>
 </resources>

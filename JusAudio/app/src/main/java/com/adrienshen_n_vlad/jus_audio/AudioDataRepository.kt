@@ -6,6 +6,7 @@ import com.adrienshen_n_vlad.jus_audio.persistence.JusAudioDatabase
 import com.adrienshen_n_vlad.jus_audio.persistence.entities.JusAudios
 import com.adrienshen_n_vlad.jus_audio.persistence.entities.PlayHistory
 import com.adrienshen_n_vlad.jus_audio.persistence.entities.RecommendedAudios
+import com.adrienshen_n_vlad.jus_audio.utility_classes.JusAudioConstants.SEARCH_QUERY_TXT_MIN_LENGTH
 
 class AudioDataRepository(
     private val jusAudioContentProvider: JusAudiosContentProvider,
@@ -18,16 +19,21 @@ class AudioDataRepository(
 
     /********* getters *********/
     fun findAudio(searchQuery: String, offset: Int = 0): ArrayList<JusAudios>? {
-        var foundAudios: List<JusAudios>? =
-            jusAudioDatabase.jusAudiosDao().findAudio(searchQuery = searchQuery, offset = offset)
-        return if (foundAudios != null && foundAudios.isNotEmpty())
-            foundAudios as ArrayList<JusAudios>
-        else {
-            foundAudios = jusAudioContentProvider.searchAudio(query = searchQuery, offset = offset)
-            if (foundAudios.isNotEmpty())
-                jusAudioDatabase.jusAudiosDao().insertAudios(foundAudios)
-            foundAudios
-        }
+        Log.d("Repository_search", "findAudio() called")
+        return if (searchQuery.trim().length > SEARCH_QUERY_TXT_MIN_LENGTH) {
+            var foundAudios: List<JusAudios>? =
+                jusAudioDatabase.jusAudiosFtsDao()
+                    .findAudio(searchQuery = "*${searchQuery}*", offset = offset)
+            if (foundAudios != null && foundAudios.isNotEmpty())
+                foundAudios as ArrayList<JusAudios>
+            else {
+                foundAudios =
+                    jusAudioContentProvider.searchAudio(query = searchQuery, offset = offset)
+                if (foundAudios.isNotEmpty())
+                    jusAudioDatabase.jusAudiosDao().insertAudios(foundAudios)
+                foundAudios
+            }
+        } else null
     }
 
     fun getRecommendedAudios(offset: Int = 0): ArrayList<JusAudios>? {
@@ -112,10 +118,10 @@ class AudioDataRepository(
         jusAudioDatabase.playHistoryDao().deleteAllHistory()
     }
 
-    fun toggleFavoriteItem(audioToModiy: JusAudios) {
-        jusAudioDatabase.jusAudiosDao().updateAudios(audioToModiy)
-        updatePlayHistoryCache(audioToModiy)
-        updateRecommendedCache(audioToModiy)
+    fun toggleFavoriteItem(audioToModify: JusAudios) {
+        jusAudioDatabase.jusAudiosDao().updateAudios(audioToModify)
+        updatePlayHistoryCache(audioToModify)
+        updateRecommendedCache(audioToModify)
 
     }
 
@@ -129,11 +135,11 @@ class AudioDataRepository(
         deleteItemInRecommendedCache(rowId = rowId)
     }
 
-    private fun updatePlayHistoryCache(audioToModiy: JusAudios) {
+    private fun updatePlayHistoryCache(audioToModify: JusAudios) {
         //todo
     }
 
-    private fun updateRecommendedCache(audioToModiy: JusAudios) {
+    private fun updateRecommendedCache(audioToModify: JusAudios) {
         //todo
     }
 

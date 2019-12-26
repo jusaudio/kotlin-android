@@ -57,7 +57,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
     fun loadRecommendedAudios() {
         Log.d("loadRecommended", "called")
-        if ( recommendedList.size % QUERY_LIMIT == 0 || offsetRecommendedListBy - recommendedList.size <= QUERY_LIMIT) {
+        if (recommendedList.size % QUERY_LIMIT == 0 || offsetRecommendedListBy - recommendedList.size <= QUERY_LIMIT) {
 
             Log.d("loadRecommended", "loading")
             val resultCallback = object : DoAsync.AsyncOperationListener {
@@ -65,7 +65,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                     if (isSuccessful) {
                         if (dataFetched != null && dataFetched is ArrayList<*> && dataFetched.size > 0) {
                             recommendedList.clear()
-                            recommendedList.addAll ((dataFetched as ArrayList<JusAudios>))
+                            recommendedList.addAll((dataFetched as ArrayList<JusAudios>))
                             Log.d("loadRecommended", "completed " + dataFetched.size.toString())
                         }
                         offsetRecommendedListBy += QUERY_LIMIT
