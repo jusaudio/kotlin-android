@@ -35,22 +35,6 @@
         app:layout_constraintTop_toTopOf="parent" />
 
 
-    <TextView
-        android:id="@+id/audio_author_tv"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/padding_std"
-        android:layout_marginTop="@dimen/padding_std"
-        android:layout_marginEnd="@dimen/padding_std"
-        android:gravity="start|center_vertical"
-        android:textColor="@color/colorLightGray"
-        android:textSize="@dimen/paragraph_txt"
-        android:fontFamily="@font/raleway"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@id/audio_cover_iv"
-        app:layout_constraintTop_toBottomOf="@id/audio_title_tv" />
-
-
     <ImageView
         android:id="@+id/play_now_iv"
         android:layout_width="@dimen/clickable_std"
@@ -64,39 +48,26 @@
         android:tint="@color/colorLightGray"
         android:src="@drawable/ic_play_arrow_black_24dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/audio_author_tv" />
+        app:layout_constraintTop_toBottomOf="@id/audio_title_tv" />
 
-    <ImageView
-        android:id="@+id/add_to_fav_iv"
-        android:layout_width="@dimen/clickable_std"
-        android:layout_height="@dimen/clickable_std"
+    <TextView
+        android:id="@+id/audio_author_tv"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/clickable_std"
+        android:layout_marginStart="@dimen/padding_std"
         android:layout_marginTop="@dimen/padding_std"
         android:layout_marginEnd="@dimen/padding_std"
-        android:adjustViewBounds="true"
-        android:clickable="true"
-        android:contentDescription="@string/audio_cover_img_desc"
-        android:focusable="true"
-        android:scaleType="centerInside"
-        android:tint="@color/colorLightGray"
-        android:src="@drawable/ic_favorite_border_black_24dp"
+        android:gravity="start|center_vertical"
+        android:textColor="@color/colorLightGray"
+        android:textSize="@dimen/paragraph_txt"
+        android:fontFamily="@font/raleway"
         app:layout_constraintEnd_toStartOf="@id/play_now_iv"
-        app:layout_constraintTop_toBottomOf="@id/audio_author_tv" />
+        app:layout_constraintStart_toEndOf="@id/audio_cover_iv"
+        app:layout_constraintTop_toBottomOf="@id/audio_title_tv" />
 
-    <ImageView
-        android:id="@+id/remove_from_playlist_iv"
-        android:layout_width="@dimen/clickable_std"
-        android:layout_height="@dimen/clickable_std"
-        android:layout_marginTop="@dimen/padding_std"
-        android:layout_marginEnd="@dimen/padding_std"
-        android:adjustViewBounds="true"
-        android:clickable="true"
-        android:contentDescription="@string/audio_cover_img_desc"
-        android:focusable="true"
-        android:scaleType="centerInside"
-        android:tint="@color/colorLightGray"
-        android:src="@drawable/ic_remove_black_24dp"
-        app:layout_constraintEnd_toStartOf="@id/add_to_fav_iv"
-        app:layout_constraintTop_toBottomOf="@id/audio_author_tv" />
+
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,11 +3,9 @@ package com.adrienshen_n_vlad.jus_audio.persistence.dao
 import androidx.room.*
 import com.adrienshen_n_vlad.jus_audio.persistence.entities.JusAudios
 import com.adrienshen_n_vlad.jus_audio.utility_classes.JusAudioConstants.AUDIOS_TABLE_NAME
-import com.adrienshen_n_vlad.jus_audio.utility_classes.JusAudioConstants.AUDIO_AUTHOR
 import com.adrienshen_n_vlad.jus_audio.utility_classes.JusAudioConstants.AUDIO_INFO_LANG_ID
 import com.adrienshen_n_vlad.jus_audio.utility_classes.JusAudioConstants.AUDIO_IS_FAVORITE
 import com.adrienshen_n_vlad.jus_audio.utility_classes.JusAudioConstants.AUDIO_STREAM_URL
-import com.adrienshen_n_vlad.jus_audio.utility_classes.JusAudioConstants.AUDIO_TITLE
 import com.adrienshen_n_vlad.jus_audio.utility_classes.JusAudioConstants.QUERY_LIMIT
 import com.adrienshen_n_vlad.jus_audio.utility_classes.JusAudioConstants.ROW_ID
 
@@ -33,9 +31,5 @@ interface JusAudiosDao {
 
     @Update
     fun updateAudios(vararg jusAudios: JusAudios)
-
-    @Query("SELECT *, $ROW_ID, $AUDIO_INFO_LANG_ID FROM $AUDIOS_TABLE_NAME WHERE $AUDIO_TITLE MATCH :searchQuery OR $AUDIO_AUTHOR MATCH :searchQuery ORDER BY $ROW_ID ASC LIMIT :limit OFFSET :offset")
-    fun findAudio(searchQuery: String, offset: Int = 0, limit: Int = QUERY_LIMIT): List<JusAudios>?
-
 
 }
