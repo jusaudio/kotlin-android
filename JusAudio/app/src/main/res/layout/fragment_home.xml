@@ -1,101 +1,111 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:clipToPadding="false"
-    android:padding="@dimen/padding_std"
     tools:context="com.adrienshen_n_vlad.jus_audio.ui.fragments.home.HomeFragment">
 
-    <ImageView
-        android:id="@+id/menu_iv"
-        android:layout_width="@dimen/clickable_std"
-        android:layout_height="@dimen/clickable_std"
-        android:adjustViewBounds="true"
-        android:background="@color/colorDarkGray"
-        android:contentDescription="@string/menu_clickable_iv_desc"
-        android:elevation="@dimen/padding_std"
-        android:scaleType="centerInside"
-        android:src="@drawable/ic_more_vert_light_gray"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
 
-    <TextView
-        android:id="@+id/search_bar_tv"
-        android:layout_width="0dp"
-        android:layout_height="@dimen/clickable_std"
-        android:layout_marginEnd="@dimen/padding_std"
-        android:background="@color/colorDarkGray"
-        android:clickable="true"
-        android:drawableStart="@drawable/ic_search_light_gray"
-        android:drawablePadding="@dimen/padding_std"
-        android:elevation="@dimen/padding_std"
-        android:focusable="true"
-        android:fontFamily="@font/alegreya"
-        android:gravity="start|center_vertical"
-        android:paddingStart="@dimen/padding_std"
-        android:paddingEnd="@dimen/padding_std"
-        android:text="@string/search_txt"
-        android:textColor="@color/colorLightGray"
-        android:textSize="@dimen/input_btn_subtitle_txt"
-        app:layout_constraintEnd_toStartOf="@id/menu_iv"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-
-    <TextView
-        android:id="@+id/recommendations_title_tv"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/padding_md"
-        android:fontFamily="@font/alegreya"
-        android:gravity="start|center_vertical"
-        android:paddingStart="@dimen/padding_std"
-        android:paddingEnd="@dimen/padding_std"
-        android:text="@string/recommendations_title_txt"
-        android:textColor="@color/colorWhite"
-        android:textSize="@dimen/input_btn_subtitle_txt"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/search_bar_tv" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recommendations_rv"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/padding_std"
-        android:padding="@dimen/padding_std"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/recommendations_title_tv" />
-
-
-    <TextView
-        android:id="@+id/coming_next_title_tv"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/padding_md"
-        android:fontFamily="@font/alegreya"
-        android:gravity="start|center_vertical"
-        android:paddingStart="@dimen/padding_std"
-        android:paddingEnd="@dimen/padding_std"
-        android:text="@string/coming_next_title_txt"
-        android:textColor="@color/colorWhite"
-        android:textSize="@dimen/input_btn_subtitle_txt"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/recommendations_rv" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/playlist_rv"
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="@dimen/padding_std"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/coming_next_title_tv" />
+        android:layout_height="match_parent"
+        android:clipToPadding="false"
+        android:padding="@dimen/padding_std">
+
+        <ImageView
+            android:id="@+id/menu_iv"
+            android:layout_width="@dimen/clickable_std"
+            android:layout_height="@dimen/clickable_std"
+            android:adjustViewBounds="true"
+            android:background="@color/colorDarkGray"
+            android:contentDescription="@string/menu_clickable_iv_desc"
+            android:elevation="@dimen/padding_std"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_more_vert_light_gray"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/search_bar_tv"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/clickable_std"
+            android:layout_marginEnd="@dimen/padding_std"
+            android:background="@color/colorDarkGray"
+            android:clickable="true"
+            android:drawableStart="@drawable/ic_search_light_gray"
+            android:drawablePadding="@dimen/padding_std"
+            android:elevation="@dimen/padding_std"
+            android:focusable="true"
+            android:fontFamily="@font/alegreya"
+            android:gravity="start|center_vertical"
+            android:paddingStart="@dimen/padding_std"
+            android:paddingEnd="@dimen/padding_std"
+            android:text="@string/search_txt"
+            android:textColor="@color/colorLightGray"
+            android:textSize="@dimen/input_btn_subtitle_txt"
+            app:layout_constraintEnd_toStartOf="@id/menu_iv"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <TextView
+            android:id="@+id/recommendations_title_tv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/padding_md"
+            android:fontFamily="@font/alegreya"
+            android:gravity="start|center_vertical"
+            android:paddingStart="@dimen/padding_std"
+            android:paddingEnd="@dimen/padding_std"
+            android:text="@string/recommendations_title_txt"
+            android:textColor="@color/colorWhite"
+            android:textSize="@dimen/input_btn_subtitle_txt"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/search_bar_tv" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recommendations_rv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/padding_std"
+            android:padding="@dimen/padding_std"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/recommendations_title_tv" />
+
+
+        <TextView
+            android:id="@+id/coming_next_title_tv"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/padding_md"
+            android:fontFamily="@font/alegreya"
+            android:gravity="start|center_vertical"
+            android:paddingStart="@dimen/padding_std"
+            android:paddingEnd="@dimen/padding_std"
+            android:text="@string/coming_next_title_txt"
+            android:textColor="@color/colorWhite"
+            android:textSize="@dimen/input_btn_subtitle_txt"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/recommendations_rv" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/playlist_rv"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_marginTop="@dimen/padding_std"
+            android:layout_marginBottom="@dimen/clickable_std"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/coming_next_title_tv" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <include layout="@layout/fragment_audio_player" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

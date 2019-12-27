@@ -14,6 +14,7 @@ import com.adrienshen_n_vlad.jus_audio.utility_classes.JusAudioConstants.QUERY_L
 
 class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
+
     private val audioDataRepository: AudioDataRepository by lazy {
         (application.applicationContext as JusAudioApp).audioDataRepository!!
     }
@@ -47,7 +48,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     var recentlyModifiedPlayListAudioPos = -1
     private var offsetRecommendedListBy = 0
     private var offsetPlayHistoryBy = 0
-
+    var currentlyPlayingSongAtPos: Int = 0
 
     init {
         if (recommendedList.size == 0) loadRecommendedAudios()

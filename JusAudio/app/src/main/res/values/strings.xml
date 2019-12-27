@@ -1,11 +1,13 @@
 <resources>
     <string name="app_name">JusAudio</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="search_txt">Search</string>
     <string name="menu_clickable_iv_desc">View Menu</string>
     <string name="recommendations_title_txt">Recommended</string>
     <string name="coming_next_title_txt">Up Next</string>
     <string name="audio_cover_img_desc">Album Cover</string>
+    <string name="prev_btn_desc">Play previous song</string>
+    <string name="next_btn_desc">Play next song</string>
+    <string name="play_btn_desc">Play Song</string>
+    <string name="now_playing_txt">Streaming…</string>
 </resources>
