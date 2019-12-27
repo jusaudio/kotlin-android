@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/audio_player_bottom_sheet"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/colorBlack"
+    android:padding="@dimen/padding_std"
+    app:behavior_hideable="false"
+    app:behavior_peekHeight="@dimen/clickable_padded"
+    app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+
+    <TextView
+        android:id="@+id/now_playing_title_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/alegreya"
+        android:gravity="start|center_vertical"
+        android:text="@string/now_playing_txt"
+        android:textColor="@color/colorWhite"
+        android:textSize="@dimen/input_btn_subtitle_txt"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/audio_title_tv"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/padding_md"
+        android:fontFamily="@font/alegreya"
+        android:gravity="start|center_vertical"
+        android:textColor="@color/colorWhite"
+        android:textSize="@dimen/input_btn_subtitle_txt"
+        app:layout_constraintEnd_toStartOf="@id/now_playing_title_tv"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/audio_author_tv"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/padding_std"
+        android:fontFamily="@font/raleway"
+        android:gravity="start|center_vertical"
+        android:textColor="@color/colorLightGray"
+        android:textSize="@dimen/paragraph_txt"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/audio_title_tv" />
+
+    <SeekBar
+        android:id="@+id/seek_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/padding_std"
+        android:max="100"
+        android:progress="0"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/audio_author_tv" />
+
+    <ImageView
+        android:id="@+id/prev_iv"
+        android:layout_width="@dimen/clickable_std"
+        android:layout_height="@dimen/clickable_std"
+        android:layout_marginStart="@dimen/clickable_std"
+        android:layout_marginTop="@dimen/padding_std"
+        android:adjustViewBounds="true"
+        android:clickable="true"
+        android:contentDescription="@string/prev_btn_desc"
+        android:focusable="true"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_skip_previous_black_24dp"
+        android:tint="@color/colorLightGray"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/seek_bar" />
+
+    <ImageView
+        android:id="@+id/play_iv"
+        android:layout_width="@dimen/clickable_std"
+        android:layout_height="@dimen/clickable_std"
+        android:layout_marginTop="@dimen/padding_std"
+        android:adjustViewBounds="true"
+        android:clickable="true"
+        android:contentDescription="@string/play_btn_desc"
+        android:focusable="true"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_play_arrow_black_24dp"
+        android:tint="@color/colorWhite"
+        app:layout_constraintEnd_toStartOf="@id/next_iv"
+        app:layout_constraintStart_toEndOf="@id/prev_iv"
+        app:layout_constraintTop_toBottomOf="@id/seek_bar" />
+
+
+    <ImageView
+        android:id="@+id/next_iv"
+        android:layout_width="@dimen/clickable_std"
+        android:layout_height="@dimen/clickable_std"
+        android:layout_marginTop="@dimen/padding_std"
+        android:layout_marginEnd="@dimen/clickable_std"
+        android:adjustViewBounds="true"
+        android:clickable="true"
+        android:contentDescription="@string/next_btn_desc"
+        android:focusable="true"
+        android:scaleType="centerInside"
+        android:src="@drawable/ic_skip_next_black_24dp"
+        android:tint="@color/colorLightGray"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/seek_bar" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -47,6 +47,8 @@ class PlayListAdapter(
         return position
     }
 
+    fun getItemAtPos(adapterPosition: Int): JusAudios = playListItems[adapterPosition]
+
     class PlayListViewHolder(
         itemView: View,
         private val playListItemClickListener: PlayListItemClickListener

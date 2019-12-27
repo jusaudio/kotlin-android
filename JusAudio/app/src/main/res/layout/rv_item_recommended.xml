@@ -25,12 +25,12 @@
         android:layout_width="@dimen/cover_size"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/padding_std"
+        android:fontFamily="@font/alegreya"
         android:gravity="center"
         android:paddingStart="@dimen/padding_std"
         android:paddingEnd="@dimen/padding_std"
         android:textColor="@color/colorWhite"
-        android:textSize="@dimen/input_btn_subtitle_txt"
-        android:fontFamily="@font/alegreya" />
+        android:textSize="@dimen/input_btn_subtitle_txt" />
 
 
     <TextView
@@ -38,11 +38,11 @@
         android:layout_width="@dimen/cover_size"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/padding_std"
+        android:fontFamily="@font/raleway"
         android:gravity="center"
         android:paddingStart="@dimen/padding_std"
         android:paddingEnd="@dimen/padding_std"
         android:textColor="@color/colorLightGray"
-        android:textSize="@dimen/paragraph_txt"
-        android:fontFamily="@font/raleway" />
+        android:textSize="@dimen/paragraph_txt" />
 
 </LinearLayout>
