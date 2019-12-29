@@ -16,6 +16,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.adrienshen_n_vlad.jus_audio.R
+import com.adrienshen_n_vlad.jus_audio.persistence.entities.JusAudios
 import com.adrienshen_n_vlad.jus_audio.ui.rv_adapters.SearchResultsAdapter
 import com.adrienshen_n_vlad.jus_audio.utility_classes.JusAudioConstants.SEARCH_QUERY_TXT_MIN_LENGTH
 
@@ -74,6 +75,14 @@ class SearchFragment : Fragment(), SearchResultsAdapter.SearchResultClickListene
                     searchResultsAdapter.notifyItemRangeInserted(
                         searchViewModel.insertedItemsAtPos,
                         searchViewModel.insertedItemsCount
+                    )
+                }
+
+                SearchViewModel.State.REMOVED -> {
+                    currentlyLoading = false
+                    progressBar.visibility = View.INVISIBLE
+                    searchResultsAdapter.notifyItemRemoved(
+                        searchViewModel.removedItemAtPos
                     )
                 }
 
@@ -143,4 +152,8 @@ class SearchFragment : Fragment(), SearchResultsAdapter.SearchResultClickListene
         })
     }
 
+
+    override fun onAddToCollectionClicked(adapterPosition: Int, foundItem: JusAudios) {
+        searchViewModel.addToMyCollection(adapterPosition, foundItem)
+    }
 }

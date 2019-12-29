@@ -8,7 +8,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.adrienshen_n_vlad.jus_audio.AudioDataRepository
 import com.adrienshen_n_vlad.jus_audio.JusAudioApp
-import com.adrienshen_n_vlad.jus_audio.background_tasks.DoAsync
+import com.adrienshen_n_vlad.jus_audio.background_work.DoAsync
 import com.adrienshen_n_vlad.jus_audio.persistence.entities.JusAudios
 import com.adrienshen_n_vlad.jus_audio.utility_classes.JusAudioConstants
 
@@ -20,6 +20,7 @@ class SearchViewModel(application: Application) : AndroidViewModel(application) 
 
     private val results = ArrayList<JusAudios>()
     fun getResults(): ArrayList<JusAudios> = results
+    var removedItemAtPos = 0
     var insertedItemsAtPos = 0
     var insertedItemsCount = 0
     var prevQueriedItem = ""
@@ -28,7 +29,8 @@ class SearchViewModel(application: Application) : AndroidViewModel(application) 
         LOADING_NEW,
         LOADING_MORE,
         ADDED,
-        LOADED
+        LOADED,
+        REMOVED
     }
 
     private fun setInsertedItemsRange(totalItemsInserted: Int) {
@@ -110,6 +112,16 @@ class SearchViewModel(application: Application) : AndroidViewModel(application) 
 
             Log.d("loadResults", "loading batch : offset $offsetResultsBy")
         }
+    }
+
+    fun addToMyCollection(itemPos : Int , audioClicked : JusAudios){
+        DoAsync()
+            .execute({
+                audioDataRepository.addToHistory(audioClicked)
+            })
+        results.removeAt(itemPos)
+        removedItemAtPos = itemPos
+        searchState.value = State.REMOVED
     }
 
 }

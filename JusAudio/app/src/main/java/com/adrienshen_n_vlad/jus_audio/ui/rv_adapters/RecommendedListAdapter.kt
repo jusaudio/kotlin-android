@@ -15,7 +15,7 @@ class RecommendedListAdapter(
 ) : RecyclerView.Adapter<RecommendedListAdapter.RecommendedListViewHolder>() {
 
     interface RecommendedItemClickListener {
-        fun onAudioCoverClicked(adapterPos: Int)
+        fun onRecommendedAudioClicked(clickedAudio : JusAudios)
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecommendedListViewHolder {
@@ -43,6 +43,7 @@ class RecommendedListAdapter(
     }
 
 
+
     class RecommendedListViewHolder(
         itemView: View,
         private val recommendedItemClickListener: RecommendedItemClickListener
@@ -66,7 +67,7 @@ class RecommendedListAdapter(
             audioAuthorTv.text = recommendedItem.audioAuthor
 
             audioCoverIv.setOnClickListener {
-                recommendedItemClickListener.onAudioCoverClicked(adapterPosition)
+                recommendedItemClickListener.onRecommendedAudioClicked(recommendedItem)
             }
         }
     }

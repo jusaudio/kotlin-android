@@ -16,9 +16,9 @@ class PlayListAdapter(
 ) : RecyclerView.Adapter<PlayListAdapter.PlayListViewHolder>() {
 
     interface PlayListItemClickListener {
-        fun onFavIconClicked(adapterPosition: Int) {}
-        fun onPlayIconClicked(adapterPosition: Int) {}
-        fun onRemoveIoonClicked(adapterPosition: Int) {}
+        fun onFavIconClicked(adapterPosition: Int, clickedAudio : JusAudios) {}
+        fun onPlayIconClicked(adapterPosition: Int, clickedAudio : JusAudios) {}
+        fun onRemoveIoonClicked(adapterPosition: Int, clickedAudio : JusAudios) {}
 
     }
 
@@ -63,7 +63,7 @@ class PlayListAdapter(
         private val removeFromPlaylistIv =
             itemView.findViewById<ImageView>(R.id.remove_from_playlist_iv)
         private val playNowIv =
-            itemView.findViewById<ImageView>(R.id.play_now_iv)
+            itemView.findViewById<ImageView>(R.id.add_to_collection)
         private val addToFavIv = itemView.findViewById<ImageView>(R.id.add_to_fav_iv)
 
         fun bindData(playListItem: JusAudios) {
@@ -78,11 +78,11 @@ class PlayListAdapter(
 
 
             playNowIv.setOnClickListener {
-                playListItemClickListener.onPlayIconClicked(adapterPosition)
+                playListItemClickListener.onPlayIconClicked(adapterPosition, playListItem)
             }
 
             removeFromPlaylistIv.setOnClickListener {
-                playListItemClickListener.onRemoveIoonClicked(adapterPosition)
+                playListItemClickListener.onRemoveIoonClicked(adapterPosition, playListItem)
             }
 
             if (playListItem.audioIsFavorite) {
@@ -103,7 +103,7 @@ class PlayListAdapter(
             }
 
             addToFavIv.setOnClickListener {
-                playListItemClickListener.onFavIconClicked(adapterPosition)
+                playListItemClickListener.onFavIconClicked(adapterPosition, playListItem)
             }
         }
     }

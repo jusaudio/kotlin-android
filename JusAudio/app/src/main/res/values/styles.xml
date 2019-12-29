@@ -13,4 +13,32 @@
         <item name="colorError">@color/colorErrors</item>
     </style>
 
+    <style name="CustomExoMediaButton">
+        <item name="android:background">@color/colorBlack</item>
+        <item name="android:scaleType">centerInside</item>
+        <item name="android:layout_width">@dimen/clickable_std</item>
+        <item name="android:layout_height">@dimen/clickable_std</item>
+    </style>
+
+    <style name="CustomExoMediaButton.Play">
+        <item name="android:tint">@color/colorWhite</item>
+        <item name="android:src">@drawable/ic_play_arrow_black_24dp</item>
+    </style>
+
+    <style name="CustomExoMediaButton.Pause">
+        <item name="android:tint">@color/colorWhite</item>
+        <item name="android:src">@drawable/ic_pause_black_24dp</item>
+    </style>
+
+    <style name="CustomExoMediaButton.SkipNext">
+        <item name="android:tint">@color/colorWhite</item>
+        <item name="android:src">@drawable/ic_skip_next_black_24dp</item>
+    </style>
+
+    <style name="CustomExoMediaButton.SkipPrev">
+        <item name="android:tint">@color/colorWhite</item>
+        <item name="android:src">@drawable/ic_skip_previous_black_24dp</item>
+    </style>
+
+
 </resources>

@@ -7,7 +7,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.adrienshen_n_vlad.jus_audio.AudioDataRepository
 import com.adrienshen_n_vlad.jus_audio.JusAudioApp
-import com.adrienshen_n_vlad.jus_audio.background_tasks.DoAsync
+import com.adrienshen_n_vlad.jus_audio.background_work.DoAsync
 import com.adrienshen_n_vlad.jus_audio.persistence.entities.JusAudios
 import com.adrienshen_n_vlad.jus_audio.utility_classes.JusAudioConstants.QUERY_LIMIT
 
@@ -19,13 +19,11 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         (application.applicationContext as JusAudioApp).audioDataRepository!!
     }
 
-    private val recommendedList = ArrayList<JusAudios>()
-    fun getRecommendedList() = recommendedList
+    val recommendedList = ArrayList<JusAudios>()
 
-    private val playList = ArrayList<JusAudios>()
-    fun getPlayList() = playList
+    val playList = ArrayList<JusAudios>()
 
-    enum class State {
+    enum class DataState {
         LOADING,
         LOADED,
         ITEM_ADDED,
@@ -33,15 +31,20 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         ITEM_REMOVED
     }
 
-    private val playListState = MutableLiveData<State>()
-    fun observePlayListState(): LiveData<State> {
+    private val playListState = MutableLiveData<DataState>()
+    fun observePlayHistoryState(): LiveData<DataState> {
         return playListState
     }
 
-    private val recommendedListState = MutableLiveData<State>()
-    fun observeRecommendedListState(): LiveData<State> {
+    private val recommendedListState = MutableLiveData<DataState>()
+    fun observeRecommendedListState(): LiveData<DataState> {
         return recommendedListState
     }
+
+    /********* audio player state ************/
+    var playWhenReady: Boolean =  false
+    var playbackPosition: Long = 0
+    var currentWindow: Int = 0
 
 
     var recentlyModifiedRecommendedAudioPos = -1
@@ -53,7 +56,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     init {
         if (recommendedList.size == 0) loadRecommendedAudios()
 
-        if (playList.size == 0) loadPlayList()
+        if (playList.size == 0) loadPlayHistory()
     }
 
     fun loadRecommendedAudios() {
@@ -72,7 +75,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                         offsetRecommendedListBy += QUERY_LIMIT
                         Log.d("loadRecommended", "completed successful : null")
                     }
-                    recommendedListState.value = State.LOADED
+                    recommendedListState.value = DataState.LOADED
                     Log.d("loadRecommended", "loaded")
                 }
             }
@@ -81,7 +84,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                 .execute({
                     audioDataRepository.getRecommendedAudios(offset = offsetRecommendedListBy)
                 })
-            recommendedListState.value = State.LOADING
+            recommendedListState.value = DataState.LOADING
 
         }
         //else we have fetched all recommended items
@@ -89,7 +92,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
     }
 
-    fun loadPlayList() {
+    fun loadPlayHistory() {
         Log.d("loadPlayList", "called")
         if (playList.size % QUERY_LIMIT == 0 || offsetPlayHistoryBy - playList.size <= QUERY_LIMIT) {
 
@@ -107,7 +110,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                         offsetPlayHistoryBy += QUERY_LIMIT
                         Log.d("loadPlayList", "completed successful : null")
                     }
-                    playListState.value = State.LOADED
+                    playListState.value = DataState.LOADED
 
 
                     Log.d("loadPlayList", "loaded")
@@ -119,66 +122,60 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                     audioDataRepository.getHistory(offset = offsetPlayHistoryBy)
                 })
 
-            playListState.value = State.LOADING
+            playListState.value = DataState.LOADING
 
         }
-        //else we have fetched all playList items
+        //else we have fetched all playHistory items
 
 
     }
 
-    fun toggleFavorite(itemPos: Int) {
+    fun toggleFavoriteAudio(
+        itemPos: Int,
+        audioToModify: JusAudios
+    ) {
         playList[itemPos].audioIsFavorite = !playList[itemPos].audioIsFavorite
-        val audioToModiy = playList[itemPos]
         DoAsync()
             .execute({
-                audioDataRepository.toggleFavoriteItem(audioToModiy)
+                audioDataRepository.toggleFavoriteItem(audioToModify)
             })
         recentlyModifiedPlayListAudioPos = itemPos
-        playListState.value = State.ITEM_MODIFIED
+        playListState.value = DataState.ITEM_MODIFIED
     }
 
-    fun clearHistory() {
-        playList.clear()
-        playListState.value = State.LOADED
-        DoAsync()
-            .execute({
-                audioDataRepository.clearHistory()
-            })
-    }
 
-    fun addRecommendedItemToPlayList(itemPos: Int) {
-
-        val audio = recommendedList[itemPos]
-        playList.add(0, audio)
+    fun addAudioToPlayListTop(audioClicked : JusAudios) {
+        playList.add(0, audioClicked)
         recentlyModifiedPlayListAudioPos = 0
-        playListState.value = State.ITEM_ADDED
+        playListState.value = DataState.ITEM_ADDED
 
+        DoAsync()
+            .execute({
+                audioDataRepository.addToHistory(audioClicked)
+            })
     }
 
 
-    fun saveToHistory(itemPos: Int) {
-        val audio = playList[itemPos]
+    fun moveToPlayListBottom() {
+        val audio = playList[currentlyPlayingSongAtPos]
 
-        playList.remove(audio)
-        recentlyModifiedPlayListAudioPos = itemPos
-        playListState.value = State.ITEM_MODIFIED
+        removeFromPlayList(currentlyPlayingSongAtPos,  audio)
 
+        //bring all the way down
         playList.add(audio)
         recentlyModifiedPlayListAudioPos = playList.size - 1
-        playListState.value = State.ITEM_MODIFIED
-
-        DoAsync()
-            .execute({
-                audioDataRepository.addToHistory(audio)
-            })
+        playListState.value = DataState.ITEM_MODIFIED
 
     }
 
-    fun removeFromPlayList(itemPos: Int) {
-        val audio = playList[itemPos]
-        playList.remove(audio)
+    fun removeFromPlayList(
+        itemPos: Int,
+        audioToRemove: JusAudios
+    ) {
+        playList.remove(audioToRemove)
         recentlyModifiedPlayListAudioPos = itemPos
-        playListState.value = State.ITEM_MODIFIED
+        playListState.value = DataState.ITEM_REMOVED
     }
+
+
 }
