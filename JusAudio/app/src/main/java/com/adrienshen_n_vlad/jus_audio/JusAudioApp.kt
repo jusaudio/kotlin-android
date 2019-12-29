@@ -18,5 +18,6 @@ class JusAudioApp : Application() {
             jusAudioContentProvider = jusAudioContentProvider!!,
             jusAudioDatabase = jusAudioDatabase!!
         )
-    }
+
+        }
 }

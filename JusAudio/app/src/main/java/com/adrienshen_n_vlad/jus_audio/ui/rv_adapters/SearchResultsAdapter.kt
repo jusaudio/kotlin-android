@@ -15,7 +15,7 @@ class SearchResultsAdapter(
 ) : RecyclerView.Adapter<SearchResultsAdapter.SearchResultsViewHolder>() {
 
     interface SearchResultClickListener {
-        fun onPlayIconClicked(adapterPosition: Int) {}
+        fun onAddToCollectionClicked(adapterPosition: Int, foundItem: JusAudios) {}
     }
 
 
@@ -55,7 +55,7 @@ class SearchResultsAdapter(
         private val audioAuthorTv =
             itemView.findViewById<TextView>(R.id.audio_author_tv)
         private val playNowIv =
-            itemView.findViewById<ImageView>(R.id.play_now_iv)
+            itemView.findViewById<ImageView>(R.id.add_to_collection)
 
         fun bindData(foundItem: JusAudios) {
             /*todo Glide.with(itemView.context)
@@ -69,7 +69,7 @@ class SearchResultsAdapter(
 
 
             playNowIv.setOnClickListener {
-                foundItemClickListener.onPlayIconClicked(adapterPosition)
+                foundItemClickListener.onAddToCollectionClicked(adapterPosition, foundItem)
             }
         }
     }

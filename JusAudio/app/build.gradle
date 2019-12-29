@@ -35,6 +35,7 @@ android {
     compileOptions {
         sourceCompatibility = 1.8
         targetCompatibility = 1.8
+
     }
 
 
@@ -78,4 +79,10 @@ dependencies {
     kapt "androidx.room:room-compiler:$room_version"
     kapt "android.arch.persistence.room:compiler:$room_version"
     testImplementation "androidx.room:room-testing:$room_version"
+
+    //exo_player
+    def exo_player_version = "2.11.1"
+    implementation "com.google.android.exoplayer:exoplayer-core:$exo_player_version"
+    implementation "com.google.android.exoplayer:exoplayer-dash:$exo_player_version"
+    implementation "com.google.android.exoplayer:exoplayer-ui:$exo_player_version"
 }

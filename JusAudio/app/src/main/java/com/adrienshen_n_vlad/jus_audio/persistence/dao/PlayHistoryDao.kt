@@ -11,7 +11,7 @@ interface PlayHistoryDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun insertAudio(playedAudio: PlayHistory): Long
 
-    @Query("SELECT * FROM $HISTORY_TABLE_NAME ORDER BY $ROW_ID ASC LIMIT :limit OFFSET :offset")
+    @Query("SELECT * FROM $HISTORY_TABLE_NAME ORDER BY $ROW_ID DESC LIMIT :limit OFFSET :offset")
     fun getHistory(offset: Int = 0, limit: Int = QUERY_LIMIT): List<PlayHistory>?
 
     @Query("DELETE FROM $HISTORY_TABLE_NAME")

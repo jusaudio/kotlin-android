@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/colorBlack"
+    android:padding="@dimen/padding_std">
+
+    <TextView
+        android:id="@+id/audio_player_hint_tv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/alegreya"
+        android:gravity="start|center_vertical"
+        android:text="@string/player_is_idle_txt"
+        android:textColor="@color/colorWhite"
+        android:textSize="@dimen/input_btn_subtitle_txt"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/audio_title_tv"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/padding_md"
+        android:fontFamily="@font/alegreya"
+        android:gravity="start|center_vertical"
+        android:textColor="@color/colorWhite"
+        android:textSize="@dimen/input_btn_subtitle_txt"
+        app:layout_constraintEnd_toStartOf="@id/audio_player_hint_tv"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/audio_author_tv"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/padding_std"
+        android:fontFamily="@font/raleway"
+        android:gravity="start|center_vertical"
+        android:textColor="@color/colorLightGray"
+        android:textSize="@dimen/paragraph_txt"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/audio_title_tv" />
+
+    <com.google.android.exoplayer2.ui.DefaultTimeBar
+        android:id="@+id/exo_progress"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/exo_player_progress_height"
+        android:layout_marginTop="@dimen/padding_std"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/audio_author_tv" />
+
+    <ImageButton
+        android:id="@+id/custom_prev_ib"
+        android:layout_width="@dimen/clickable_std"
+        android:layout_height="@dimen/clickable_std"
+        android:layout_marginStart="@dimen/clickable_std"
+        android:layout_marginTop="@dimen/padding_std"
+        android:adjustViewBounds="true"
+        style="@style/CustomExoMediaButton.SkipPrev"
+        android:contentDescription="@string/prev_btn_desc"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/exo_progress" />
+
+    <ImageButton
+        android:id="@+id/exo_play"
+        android:layout_width="@dimen/clickable_std"
+        android:layout_height="@dimen/clickable_std"
+        android:layout_marginTop="@dimen/padding_std"
+        android:adjustViewBounds="true"
+        android:contentDescription="@string/play_btn_desc"
+        app:layout_constraintEnd_toStartOf="@id/custom_next_ib"
+        app:layout_constraintStart_toEndOf="@id/custom_prev_ib"
+        app:layout_constraintTop_toBottomOf="@id/exo_progress"
+        style="@style/CustomExoMediaButton.Play"/>
+
+    <ImageButton
+        android:id="@+id/exo_pause"
+        android:layout_width="@dimen/clickable_std"
+        android:layout_height="@dimen/clickable_std"
+        android:layout_marginTop="@dimen/padding_std"
+        android:adjustViewBounds="true"
+        android:contentDescription="@string/pause_btn_desc"
+        app:layout_constraintEnd_toStartOf="@id/custom_next_ib"
+        app:layout_constraintStart_toEndOf="@id/custom_prev_ib"
+        app:layout_constraintTop_toBottomOf="@id/exo_progress"
+        style="@style/CustomExoMediaButton.Pause"/>
+    
+    <ImageButton
+        android:id="@+id/custom_next_ib"
+        android:layout_width="@dimen/clickable_std"
+        android:layout_height="@dimen/clickable_std"
+        android:layout_marginTop="@dimen/padding_std"
+        android:layout_marginEnd="@dimen/clickable_std"
+        android:adjustViewBounds="true"
+        android:contentDescription="@string/next_btn_desc"
+        style="@style/CustomExoMediaButton.SkipNext"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/exo_progress"/>
+
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

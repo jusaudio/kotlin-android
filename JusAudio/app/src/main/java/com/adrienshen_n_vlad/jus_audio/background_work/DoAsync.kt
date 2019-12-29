@@ -1,4 +1,4 @@
-package com.adrienshen_n_vlad.jus_audio.background_tasks
+package com.adrienshen_n_vlad.jus_audio.background_work
 
 import android.os.AsyncTask
 import android.util.Log

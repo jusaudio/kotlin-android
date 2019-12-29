@@ -1,13 +1,19 @@
 <resources>
     <string name="app_name">JusAudio</string>
 
+    <!-- todo remove dummy url -->
+    <string name="dummy_audio_url">https://storage.googleapis.com/exoplayer-test-media-0/Jazz_In_Paris.mp3</string>
+
     <string name="search_txt">Search</string>
     <string name="menu_clickable_iv_desc">View Menu</string>
     <string name="recommendations_title_txt">Recommended</string>
-    <string name="coming_next_title_txt">Up Next</string>
+    <string name="my_music_title_txt">My Audios</string>
     <string name="audio_cover_img_desc">Album Cover</string>
     <string name="prev_btn_desc">Play previous song</string>
     <string name="next_btn_desc">Play next song</string>
     <string name="play_btn_desc">Play Song</string>
-    <string name="now_playing_txt">Streaming…</string>
+    <string name="now_playing_txt">Now playing…</string>
+    <string name="pause_btn_desc">Pause audio</string>
+    <string name="player_is_idle_txt">Click play</string>
+    <string name="streaming_txt">Streaming…</string>
 </resources>
