@@ -6,19 +6,40 @@
     android:orientation="vertical"
     android:padding="@dimen/padding_std">
 
-    <ImageView
-        android:id="@+id/audio_cover_iv"
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/cover_size"
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/padding_md"
-        android:adjustViewBounds="true"
-        android:background="@color/colorDarkGray"
-        android:clickable="true"
-        android:contentDescription="@string/audio_cover_img_desc"
-        android:elevation="@dimen/padding_std"
-        android:focusable="true"
-        android:scaleType="centerInside"
-        android:src="@drawable/ic_music_note_black_24dp" />
+        android:elevation="@dimen/padding_std">
+
+        <ImageView
+            android:id="@+id/audio_cover_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/cover_size"
+            android:adjustViewBounds="true"
+            android:background="@color/colorDarkGray"
+            android:clickable="true"
+            android:contentDescription="@string/audio_cover_img_desc"
+            android:focusable="true"
+            android:scaleType="centerInside"
+            android:src="@drawable/ic_music_note_black_24dp" />
+
+        <ImageView
+            android:id="@+id/toggle_in_collection_iv"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|end"
+            android:adjustViewBounds="true"
+            android:background="@color/colorDarkGray"
+            android:contentDescription="@string/toggle_in_collection_icon_desc"
+            android:padding="@dimen/padding_std"
+            android:scaleType="center"
+            android:src="@drawable/ic_playlist_add_black_24dp"
+            android:tint="@color/colorLightGray" />
+
+
+    </FrameLayout>
+
 
     <TextView
         android:id="@+id/audio_title_tv"

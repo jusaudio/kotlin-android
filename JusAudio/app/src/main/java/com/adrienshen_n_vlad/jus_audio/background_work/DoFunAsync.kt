@@ -3,7 +3,9 @@ package com.adrienshen_n_vlad.jus_audio.background_work
 import android.os.AsyncTask
 import android.util.Log
 
-class DoAsync(private val resultCallback: AsyncOperationListener? = null) :
+private const val LOG_TAG = "DoFunAsync"
+
+class DoFunAsync(private val resultCallback: AsyncOperationListener? = null) :
     AsyncTask<() -> Any?, Void, Any?>() {
 
 
@@ -18,7 +20,7 @@ class DoAsync(private val resultCallback: AsyncOperationListener? = null) :
         try {
             functions[0]!!()
         } catch (exc: Exception) {
-            Log.d("DoAsync", "Exception Thrown, ${exc.message}", exc.cause)
+            Log.d(LOG_TAG, "Exception Thrown, ${exc.message}", exc.cause)
             null
         }
 

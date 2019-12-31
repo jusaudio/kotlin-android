@@ -5,10 +5,12 @@ import com.adrienshen_n_vlad.jus_audio.persistence.entities.JusAudios
 import com.adrienshen_n_vlad.jus_audio.utility_classes.JusAudioConstants.DEFAULT_LANG_ID
 import com.adrienshen_n_vlad.jus_audio.utility_classes.JusAudioConstants.QUERY_LIMIT
 
+const val LOG_TAG = "ContentProvider"
+
 class JusAudiosContentProvider {
 
-
     companion object {
+
         val dummySearchList = ArrayList<JusAudios>().also {
             for (i in 1..100) {
                 val numStr = i.toString()
@@ -29,6 +31,8 @@ class JusAudiosContentProvider {
                         audioSearchTags = tagsBuilder.toString(),
                         audioCoverThumbnailUrl = coverThumbUrl,
                         audioIsFavorite = false,
+                        audioIsRecommended = false,
+                        audioIsInMyCollection = false,
                         audioInfoLanguageId = DEFAULT_LANG_ID
                     )
                 )
@@ -50,16 +54,16 @@ class JusAudiosContentProvider {
 
     private fun generateDummyResults(offset: Int = 0): ArrayList<JusAudios> {
         var startAt = offset
-        Log.d("returning from server", "start at  : $offset in ${dummySearchList.size}")
+        Log.d(LOG_TAG, "fetching, start at  : $offset in ${dummySearchList.size}")
         val result = ArrayList<JusAudios>()
         var counter = 0
         while (counter < QUERY_LIMIT) {
             if (startAt < (dummySearchList.size - 1)) {
 
-                Log.d("server says", "found ${dummySearchList[startAt].audioTitle}")
+                Log.d(LOG_TAG, "found ${dummySearchList[startAt].audioTitle}")
                 result.add(dummySearchList[startAt])
             } else {
-                Log.d("server says", "No more results")
+                Log.d(LOG_TAG, "found NO more results")
                 break
             }
             startAt += 1
@@ -73,7 +77,7 @@ class JusAudiosContentProvider {
     fun searchAudio(query: String, offset: Int = 0): ArrayList<JusAudios> {
 
         var startAt = offset
-        Log.d("returning from server", "searching for $query , offset by $offset")
+        Log.d(LOG_TAG, "searching for $query , offset by $offset")
         val result = ArrayList<JusAudios>()
         var counter = 0
         while (counter < QUERY_LIMIT) {
@@ -81,13 +85,13 @@ class JusAudiosContentProvider {
 
                 val tags = dummySearchList[startAt].audioSearchTags
                 if (tags.contains(query, ignoreCase = true)) {
-                    Log.d("server says", "found ${dummySearchList[startAt].audioTitle}")
+                    Log.d(LOG_TAG, "found ${dummySearchList[startAt].audioTitle}")
                     result.add(dummySearchList[startAt])
                 }
 
 
             } else {
-                Log.d("server says", "No more results")
+                Log.d(LOG_TAG, "found NO more results")
                 break
             }
             startAt += 1
@@ -97,5 +101,9 @@ class JusAudiosContentProvider {
     }
 
 
-    fun getRecommendations(offset: Int = 0): ArrayList<JusAudios> = generateDummyResults(offset)
+    fun getRecommendations(offset: Int = 0): ArrayList<JusAudios> {
+        val dummyList = generateDummyResults(offset)
+        for (audio in dummyList) audio.audioIsRecommended = true
+        return dummyList
+    }
 }

@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.adrienshen_n_vlad.jus_audio.R
 import com.adrienshen_n_vlad.jus_audio.persistence.entities.JusAudios
@@ -15,7 +16,8 @@ class SearchResultsAdapter(
 ) : RecyclerView.Adapter<SearchResultsAdapter.SearchResultsViewHolder>() {
 
     interface SearchResultClickListener {
-        fun onAddToCollectionClicked(adapterPosition: Int, foundItem: JusAudios) {}
+        fun onAddToOrRemoveFromCollectionClicked(adapterPosition: Int, clickedItem: JusAudios) {
+        }
     }
 
 
@@ -54,8 +56,8 @@ class SearchResultsAdapter(
         private val audioTitleTv = itemView.findViewById<TextView>(R.id.audio_title_tv)
         private val audioAuthorTv =
             itemView.findViewById<TextView>(R.id.audio_author_tv)
-        private val playNowIv =
-            itemView.findViewById<ImageView>(R.id.add_to_collection)
+        private val addToOrRemoveFromCollectionIv =
+            itemView.findViewById<ImageView>(R.id.add_or_remove_collection)
 
         fun bindData(foundItem: JusAudios) {
             /*todo Glide.with(itemView.context)
@@ -67,9 +69,26 @@ class SearchResultsAdapter(
             audioTitleTv.text = foundItem.audioTitle
             audioAuthorTv.text = foundItem.audioAuthor
 
+            if (foundItem.audioIsInMyCollection)
+                addToOrRemoveFromCollectionIv.setImageDrawable(
+                    ContextCompat.getDrawable(
+                        addToOrRemoveFromCollectionIv.context,
+                        R.drawable.ic_playlist_added_black_24dp
+                    )
+                )
+            else
+                addToOrRemoveFromCollectionIv.setImageDrawable(
+                    ContextCompat.getDrawable(
+                        addToOrRemoveFromCollectionIv.context,
+                        R.drawable.ic_playlist_add_black_24dp
+                    )
+                )
 
-            playNowIv.setOnClickListener {
-                foundItemClickListener.onAddToCollectionClicked(adapterPosition, foundItem)
+            addToOrRemoveFromCollectionIv.setOnClickListener {
+                foundItemClickListener.onAddToOrRemoveFromCollectionClicked(
+                    adapterPosition,
+                    foundItem
+                )
             }
         }
     }

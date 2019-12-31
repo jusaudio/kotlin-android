@@ -7,7 +7,7 @@
     <string name="search_txt">Search</string>
     <string name="menu_clickable_iv_desc">View Menu</string>
     <string name="recommendations_title_txt">Recommended</string>
-    <string name="my_music_title_txt">My Audios</string>
+    <string name="my_collection_title_txt">My Collection</string>
     <string name="audio_cover_img_desc">Album Cover</string>
     <string name="prev_btn_desc">Play previous song</string>
     <string name="next_btn_desc">Play next song</string>
@@ -16,4 +16,5 @@
     <string name="pause_btn_desc">Pause audio</string>
     <string name="player_is_idle_txt">Click play</string>
     <string name="streaming_txt">Streaming…</string>
+    <string name="toggle_in_collection_icon_desc">Add to or remove from my collection</string>
 </resources>

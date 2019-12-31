@@ -1,15 +1,17 @@
 package com.adrienshen_n_vlad.jus_audio.ui.fragments.home
 
 import android.annotation.SuppressLint
-import android.content.res.ColorStateList
+import android.content.Context
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.*
-import androidx.core.content.ContextCompat
+import android.widget.ImageButton
+import android.widget.ImageView
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -20,12 +22,13 @@ import androidx.recyclerview.widget.RecyclerView.HORIZONTAL
 import androidx.recyclerview.widget.RecyclerView.VERTICAL
 import com.adrienshen_n_vlad.jus_audio.R
 import com.adrienshen_n_vlad.jus_audio.persistence.entities.JusAudios
-import com.adrienshen_n_vlad.jus_audio.ui.rv_adapters.PlayListAdapter
+import com.adrienshen_n_vlad.jus_audio.ui.rv_adapters.MyCollectionAdapter
 import com.adrienshen_n_vlad.jus_audio.ui.rv_adapters.RecommendedListAdapter
 import com.google.android.exoplayer2.ExoPlaybackException
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.source.ConcatenatingMediaSource
 import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.ui.PlayerView
@@ -33,16 +36,13 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 
+private const val LOG_TAG = "HomeFragment"
 
 class HomeFragment : Fragment(), RecommendedListAdapter.RecommendedItemClickListener,
-    PlayListAdapter.PlayListItemClickListener {
+    MyCollectionAdapter.MyCollectionItemClickListener {
 
     private val homeViewModel: HomeViewModel by lazy {
         ViewModelProviders.of(this).get(HomeViewModel::class.java)
-    }
-
-    private val audioPlayer: SimpleExoPlayer by lazy {
-        SimpleExoPlayer.Builder(context!!).build()
     }
 
     override fun onCreateView(
@@ -54,17 +54,18 @@ class HomeFragment : Fragment(), RecommendedListAdapter.RecommendedItemClickList
 
     private lateinit var menuIv: ImageView
     private lateinit var recommendationsRv: RecyclerView
-    private lateinit var playlistRv: RecyclerView
+    private lateinit var myCollectionRv: RecyclerView
     private lateinit var recommendedListAdapter: RecommendedListAdapter
-    private lateinit var playlistAdapter: PlayListAdapter
+    private lateinit var myCollectionAdapter: MyCollectionAdapter
     private var currentlyLoadingRecommendedList: Boolean = true
     private var currentlyLoadingHistoryList: Boolean = true
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
     private lateinit var audioPlayerView: PlayerView
     private lateinit var audioTitleTv: TextView
-    private lateinit var audioPlayerHint : TextView
     private lateinit var skipToNextIBtn: ImageButton
     private lateinit var skipToPrevIBtn: ImageButton
+    private lateinit var exoPlayerPlayListConcatenatingMediaSource: ConcatenatingMediaSource
+    private var audioPlayer: SimpleExoPlayer? = null
 
 
     @SuppressLint("ClickableViewAccessibility")
@@ -72,17 +73,20 @@ class HomeFragment : Fragment(), RecommendedListAdapter.RecommendedItemClickList
         super.onViewCreated(view, savedInstanceState)
         menuIv = view.findViewById(R.id.menu_iv)
         recommendationsRv = view.findViewById(R.id.recommendations_rv)
-        playlistRv = view.findViewById(R.id.playlist_rv)
+        myCollectionRv = view.findViewById(R.id.my_collection_rv)
         audioPlayerView = view.findViewById(R.id.audio_player_view)
         audioPlayerView.controllerHideOnTouch = false
         audioTitleTv = view.findViewById(R.id.audio_title_tv)
-        audioPlayerHint = view.findViewById(R.id.audio_player_hint_tv)
+        view.findViewById<TextView>(R.id.audio_player_hint_tv)
+            .setOnClickListener { expandBottomPlayer() }
 
         skipToPrevIBtn = view.findViewById(R.id.custom_prev_ib)
         skipToPrevIBtn.setOnClickListener { playPrevAudio() }
 
         skipToNextIBtn = view.findViewById(R.id.custom_next_ib)
         skipToNextIBtn.setOnClickListener { playNextAudio() }
+
+        view.findViewById<ImageButton>(R.id.exo_play).setOnClickListener { playAudio() }
 
 
         val audioPlayerBottomSheet =
@@ -103,7 +107,7 @@ class HomeFragment : Fragment(), RecommendedListAdapter.RecommendedItemClickList
         super.onActivityCreated(savedInstanceState)
 
         //init recyclers
-        setupPlayListRv()
+        setupMyCollectionRv()
         setupRecommendedListRv()
 
         //observe state
@@ -134,26 +138,27 @@ class HomeFragment : Fragment(), RecommendedListAdapter.RecommendedItemClickList
 
             })
 
-        homeViewModel.observePlayHistoryState()
-            .observe(viewLifecycleOwner, Observer { playListState ->
+        homeViewModel.observeMyCollectionState()
+            .observe(viewLifecycleOwner, Observer { myCollectionState ->
 
-                when (playListState) {
+                when (myCollectionState) {
                     HomeViewModel.DataState.LOADING -> {
                         currentlyLoadingHistoryList = true
                     }
                     HomeViewModel.DataState.LOADED -> {
                         currentlyLoadingHistoryList = false
-                        playlistAdapter.notifyDataSetChanged()
+                        myCollectionAdapter.notifyDataSetChanged()
                     }
                     HomeViewModel.DataState.ITEM_ADDED -> {
-                        playlistRv.smoothScrollToPosition(0)
-                        playlistAdapter.notifyItemInserted(homeViewModel.recentlyModifiedPlayListAudioPos)
+                        val pos = homeViewModel.recentlyModifiedMyCollectionPos
+                        myCollectionRv.smoothScrollToPosition(pos)
+                        myCollectionAdapter.notifyItemInserted(pos)
                     }
                     HomeViewModel.DataState.ITEM_MODIFIED -> {
-                        playlistAdapter.notifyItemChanged(homeViewModel.recentlyModifiedPlayListAudioPos)
+                        myCollectionAdapter.notifyItemChanged(homeViewModel.recentlyModifiedMyCollectionPos)
                     }
                     HomeViewModel.DataState.ITEM_REMOVED -> {
-                        playlistAdapter.notifyItemRemoved(homeViewModel.recentlyModifiedPlayListAudioPos)
+                        myCollectionAdapter.notifyItemRemoved(homeViewModel.recentlyModifiedMyCollectionPos)
                     }
 
                     null -> {
@@ -163,26 +168,28 @@ class HomeFragment : Fragment(), RecommendedListAdapter.RecommendedItemClickList
 
     }
 
-    private fun setupPlayListRv() {
-        playlistAdapter = PlayListAdapter(
-            homeViewModel.playList,
-            playListItemClickListener = this
+    /************ RECYCLER VIEWS **************/
+    private fun setupMyCollectionRv() {
+        myCollectionAdapter = MyCollectionAdapter(
+            homeViewModel.myCollection,
+            myCollectionItemClickListener = this
         )
-        val playlistRvLayoutManager = LinearLayoutManager(context, VERTICAL, false)
-        playlistRv.layoutManager = playlistRvLayoutManager
-        playlistRv.adapter = playlistAdapter
+        val myCollectionRvLayoutManager = LinearLayoutManager(context, VERTICAL, false)
+        myCollectionRv.layoutManager = myCollectionRvLayoutManager
+        myCollectionRv.adapter = myCollectionAdapter
 
 
-        playlistRv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        myCollectionRv.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
                 super.onScrollStateChanged(recyclerView, newState)
                 val totalItemCount = recyclerView.layoutManager!!.itemCount
-                val lastVisibleItemPosition = playlistRvLayoutManager.findLastVisibleItemPosition()
+                val lastVisibleItemPosition =
+                    myCollectionRvLayoutManager.findLastVisibleItemPosition()
                 if (!currentlyLoadingHistoryList
                     && totalItemCount == lastVisibleItemPosition + 1
                 ) {
-                    Log.d("OnScroll", "loading more playlist")
-                    homeViewModel.loadPlayHistory()
+                    Log.d(LOG_TAG, "OnScroll loading more in myCollection")
+                    homeViewModel.loadMyCollection()
                 }
             }
         })
@@ -207,7 +214,7 @@ class HomeFragment : Fragment(), RecommendedListAdapter.RecommendedItemClickList
                 if (!currentlyLoadingRecommendedList
                     && totalItemCount == lastVisibleItemPosition + 1
                 ) {
-                    Log.d("OnScroll", "loading more recommended")
+                    Log.d(LOG_TAG, "OnScroll() loading more recommendations")
                     homeViewModel.loadRecommendedAudios()
                 }
             }
@@ -215,18 +222,14 @@ class HomeFragment : Fragment(), RecommendedListAdapter.RecommendedItemClickList
 
     }
 
-    private fun showBottomSheet() {
-        bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+
+    /************ LIST ITEM CLICK LISTENERS ********/
+    override fun onRecommendedAudioClicked(adapterPos: Int, clickedAudio: JusAudios) {
+        //save in view_model
+        homeViewModel.updateRecommendedAudioForCollection(adapterPos, clickedAudio)
+
     }
 
-    /************ Recommended items ********/
-    override fun onRecommendedAudioClicked(clickedAudio: JusAudios) {
-        homeViewModel.addAudioToPlayListTop(
-            clickedAudio
-        )
-    }
-
-    /*********** play list items ***********/
     override fun onFavIconClicked(adapterPosition: Int, clickedAudio: JusAudios) {
         homeViewModel.toggleFavoriteAudio(
             adapterPosition,
@@ -234,38 +237,40 @@ class HomeFragment : Fragment(), RecommendedListAdapter.RecommendedItemClickList
         )
     }
 
-    override fun onPlayIconClicked(adapterPosition: Int, clickedAudio: JusAudios) {
-        homeViewModel.currentlyPlayingSongAtPos = adapterPosition
-        playAudio(clickedAudio)
-        showBottomSheet()
+    override fun onRemoveIoonClicked(adapterPosition: Int, clickedAudio: JusAudios) {
+        homeViewModel.removeFromMyCollection(adapterPosition, clickedAudio)
     }
 
 
-    override fun onRemoveIoonClicked(adapterPosition: Int, clickedAudio: JusAudios) {
-        homeViewModel.removeFromPlayList(adapterPosition, clickedAudio)
+    override fun onPlayIconClicked(adapterPosition: Int, clickedAudio: JusAudios) {
+        homeViewModel.currentlyPlayingSongAtPos = adapterPosition
+        playAudio()
     }
 
 
     /*************** AUDIO PLAYER ********************************/
+
+    private fun expandBottomPlayer() {
+        if (bottomSheetBehavior.state != BottomSheetBehavior.STATE_EXPANDED)
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+    }
+
     private val audioPlaybackStateListener: Player.EventListener by lazy {
         object : Player.EventListener {
             override fun onPositionDiscontinuity(@Player.DiscontinuityReason reason: Int) {
-                Log.d("audioPBackStateListener", "onPositionDiscontinuity")
+                Log.d(LOG_TAG, "audioPBackStateListener - onPositionDiscontinuity")
             }
 
             override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
                 val stateString: String
                 when (playbackState) {
                     ExoPlayer.STATE_IDLE -> {
-                        audioPlayerHint.setText(R.string.player_is_idle_txt)
                         stateString = "ExoPlayer.STATE_IDLE"
                     }
                     ExoPlayer.STATE_BUFFERING -> {
-                        audioPlayerHint.setText(R.string.streaming_txt)
                         stateString = "ExoPlayer.STATE_BUFFERING"
                     }
                     ExoPlayer.STATE_READY -> {
-                        audioPlayerHint.setText(R.string.now_playing_txt)
                         stateString = "ExoPlayer.STATE_READY"
                     }
                     ExoPlayer.STATE_ENDED -> {
@@ -278,14 +283,19 @@ class HomeFragment : Fragment(), RecommendedListAdapter.RecommendedItemClickList
                 }
 
                 Log.d(
-                    "audioPBackStateListener", "changed state to " + stateString
+                    LOG_TAG,
+                    "audioPBackStateListener- changed state to " + stateString
                             + " playWhenReady: " + playWhenReady
                 )
             }
 
             override fun onPlayerError(error: ExoPlaybackException) {
                 super.onPlayerError(error)
-                Log.d("audioPBackStateListener", "an error occurred ${error.message}", error.cause)
+                Log.d(
+                    LOG_TAG,
+                    "audioPBackStateListener() an error occurred ${error.message}",
+                    error.cause
+                )
             }
 
         }
@@ -295,7 +305,6 @@ class HomeFragment : Fragment(), RecommendedListAdapter.RecommendedItemClickList
 
     private fun buildMediaSource(audioUrlStr: String): MediaSource? {
         //todo use real audioUrlStr
-
         val uri = Uri.parse(getString(R.string.dummy_audio_url))
 
         return ProgressiveMediaSource.Factory(
@@ -309,58 +318,69 @@ class HomeFragment : Fragment(), RecommendedListAdapter.RecommendedItemClickList
 
     }
 
-    private fun enableNextBtnState(){
-        skipToNextIBtn.isEnabled = true
-        skipToNextIBtn.imageTintList = ColorStateList.valueOf(
-            ContextCompat.getColor(context!!, R.color.colorWhite))
+    private fun initAudioPlayer(){
+        //player state
+        audioPlayer = SimpleExoPlayer.Builder(context!!).build()
+        exoPlayerPlayListConcatenatingMediaSource = ConcatenatingMediaSource()
+        audioPlayerView.player = audioPlayer
+        audioPlayer!!.addListener(audioPlaybackStateListener)
     }
 
 
-    private fun playAudio( audio: JusAudios) {
+    private fun playAudio() {
+        if(audioPlayer == null) initAudioPlayer()
+        if (homeViewModel.myCollection.size > 0) {
+            val audioToPlay = homeViewModel.myCollection[homeViewModel.currentlyPlayingSongAtPos]
+            expandBottomPlayer()
 
-        Log.d( "bottom sheet is" ,   bottomSheetBehavior.state.toString()  )
-        audioPlayerView.player = audioPlayer
-        audioPlayer.addListener(audioPlaybackStateListener)
-        audioTitleTv.text = audio.audioTitle
+            audioTitleTv.text = audioToPlay.audioTitle
 
-        try {
-            Log.d("HomeFragment", "playingAudio with exo player ${audio.audioTitle}" )
-            audioPlayer.playWhenReady = true
-            audioPlayer.prepare(buildMediaSource(audio.audioStreamUrl)!!, true, true)
-            enableNextBtnState()
+            try {
+                Log.d(LOG_TAG, "playingAudio with exo player ${audioToPlay.audioTitle}")
+                audioPlayer!!.playWhenReady = true
+                val mediaSourceToPlay =
+                    buildMediaSource(homeViewModel.myCollection[homeViewModel.currentlyPlayingSongAtPos].audioStreamUrl)
+                audioPlayer!!.prepare(mediaSourceToPlay!!, true, true)
 
-        } catch (e: Exception) {
-            Log.d("HomeFragment", "playingAudio, exception thrown ${e.message}", e.cause)
+            } catch (e: Exception) {
+                Log.d(LOG_TAG, "playingAudio, exception thrown ${e.message}", e.cause)
+            }
         }
 
     }
 
-    private fun playNextAudio(){
+    private fun playNextAudio() {
         //play next song
         homeViewModel.currentlyPlayingSongAtPos += 1
-        if(homeViewModel.playList.size == homeViewModel.currentlyPlayingSongAtPos)
+        if (homeViewModel.myCollection.size <= homeViewModel.currentlyPlayingSongAtPos)
             homeViewModel.currentlyPlayingSongAtPos = 0
-        val audio = homeViewModel.playList[homeViewModel.currentlyPlayingSongAtPos]
-        playAudio(audio)
+        playAudio()
 
     }
 
 
-    private fun playPrevAudio(){
+    private fun playPrevAudio() {
 
         homeViewModel.currentlyPlayingSongAtPos -= 1
-        if(homeViewModel.currentlyPlayingSongAtPos == -1){
-            homeViewModel.currentlyPlayingSongAtPos = homeViewModel.playList.size - 1
+        if (homeViewModel.currentlyPlayingSongAtPos < 0) {
+            homeViewModel.currentlyPlayingSongAtPos = homeViewModel.myCollection.size - 1
         }
 
-        if(homeViewModel.playList.size > homeViewModel.currentlyPlayingSongAtPos) {
-            val audio = homeViewModel.playList[homeViewModel.currentlyPlayingSongAtPos]
-            playAudio(audio)
+        if (homeViewModel.myCollection.size > homeViewModel.currentlyPlayingSongAtPos) {
+            playAudio()
         }
 
     }
 
-    /************** activity LIFE CYCLE ************/
+    override fun onResume() {
+        super.onResume()
+        if(homeViewModel.observeMyCollectionState().value == HomeViewModel.DataState.LOADED)
+            homeViewModel.reloadMyCollection()
+        else
+            Log.d( LOG_TAG,"Resumed " +   homeViewModel.observeMyCollectionState().value.toString() )
+    }
+
+
     override fun onPause() {
         super.onPause()
         if (Util.SDK_INT < 24) {
@@ -376,15 +396,12 @@ class HomeFragment : Fragment(), RecommendedListAdapter.RecommendedItemClickList
     }
 
     private fun releasePlayer() {
-        if (audioPlayer.playbackState == ExoPlayer.STATE_READY
-            || audioPlayer.playbackState == ExoPlayer.STATE_BUFFERING  ) {
-            //save state
-            homeViewModel.playWhenReady = audioPlayer.playWhenReady
-            homeViewModel.playbackPosition = audioPlayer.currentPosition
-            homeViewModel.currentWindow = audioPlayer.currentWindowIndex
+        if(audioPlayer != null) {
+            audioPlayer!!.release()
+            audioPlayer = null
         }
-        audioPlayer.release()
     }
+
 
 
 }

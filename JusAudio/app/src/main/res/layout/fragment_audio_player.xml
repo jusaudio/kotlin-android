@@ -4,18 +4,18 @@
     android:id="@+id/audio_player_bottom_sheet"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="@dimen/padding_std"
     android:background="@color/colorBlack"
-    app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior"
+    android:orientation="vertical"
+    android:padding="@dimen/padding_std"
     app:behavior_hideable="false"
     app:behavior_peekHeight="@dimen/clickable_padded"
-    android:orientation="vertical">
+    app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
 
-  <com.google.android.exoplayer2.ui.PlayerView
-      android:id="@+id/audio_player_view"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:layout_gravity="center"
-      app:show_timeout="0"/>
+    <com.google.android.exoplayer2.ui.PlayerView
+        android:id="@+id/audio_player_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        app:show_timeout="0" />
 
 </LinearLayout>
