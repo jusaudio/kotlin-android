@@ -20,6 +20,9 @@ import com.adrienshen_n_vlad.jus_audio.persistence.entities.JusAudios
 import com.adrienshen_n_vlad.jus_audio.ui.rv_adapters.SearchResultsAdapter
 import com.adrienshen_n_vlad.jus_audio.utility_classes.JusAudioConstants.SEARCH_QUERY_TXT_MIN_LENGTH
 
+
+private const val LOG_TAG = "SearchFragment"
+
 class SearchFragment : Fragment(), SearchResultsAdapter.SearchResultClickListener {
 
 
@@ -78,11 +81,9 @@ class SearchFragment : Fragment(), SearchResultsAdapter.SearchResultClickListene
                     )
                 }
 
-                SearchViewModel.State.REMOVED -> {
-                    currentlyLoading = false
-                    progressBar.visibility = View.INVISIBLE
-                    searchResultsAdapter.notifyItemRemoved(
-                        searchViewModel.removedItemAtPos
+                SearchViewModel.State.MODIFIED_AUDIO -> {
+                    searchResultsAdapter.notifyItemChanged(
+                        searchViewModel.modifiedItemAtPos
                     )
                 }
 
@@ -113,7 +114,7 @@ class SearchFragment : Fragment(), SearchResultsAdapter.SearchResultClickListene
                     searchResultsRvLayoutManager.findLastVisibleItemPosition()
                 if (totalItemCount == lastVisibleItemPosition + 1
                 ) {
-                    Log.d("OnScroll", "loading more results")
+                    Log.d(LOG_TAG, "Scrolled Down : loading more results")
                     search(withOffset = true)
                 }
             }
@@ -153,7 +154,10 @@ class SearchFragment : Fragment(), SearchResultsAdapter.SearchResultClickListene
     }
 
 
-    override fun onAddToCollectionClicked(adapterPosition: Int, foundItem: JusAudios) {
-        searchViewModel.addToMyCollection(adapterPosition, foundItem)
+    override fun onAddToOrRemoveFromCollectionClicked(
+        adapterPosition: Int,
+        clickedItem: JusAudios
+    ) {
+        searchViewModel.addToOrRemoveFromMyCollection(adapterPosition, clickedItem)
     }
 }

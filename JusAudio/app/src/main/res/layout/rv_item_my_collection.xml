@@ -52,7 +52,7 @@
 
 
     <ImageView
-        android:id="@+id/add_to_collection"
+        android:id="@+id/add_or_remove_collection"
         android:layout_width="@dimen/clickable_std"
         android:layout_height="@dimen/clickable_std"
         android:layout_marginTop="@dimen/padding_std"
@@ -79,7 +79,7 @@
         android:scaleType="centerInside"
         android:src="@drawable/ic_favorite_border_black_24dp"
         android:tint="@color/colorLightGray"
-        app:layout_constraintEnd_toStartOf="@id/add_to_collection"
+        app:layout_constraintEnd_toStartOf="@id/add_or_remove_collection"
         app:layout_constraintTop_toBottomOf="@id/audio_author_tv" />
 
     <ImageView

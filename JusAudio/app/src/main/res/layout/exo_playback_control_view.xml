@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/colorBlack"
@@ -10,13 +10,15 @@
         android:id="@+id/audio_player_hint_tv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:fontFamily="@font/alegreya"
+        android:fontFamily="@font/raleway"
         android:gravity="start|center_vertical"
-        android:text="@string/player_is_idle_txt"
-        android:textColor="@color/colorWhite"
+        android:text="@string/app_name"
+        android:textColor="@color/colorAccent"
         android:textSize="@dimen/input_btn_subtitle_txt"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:drawableStart="@drawable/ic_queue_music_accent_24dp"
+        android:drawablePadding="@dimen/padding_std"/>
 
     <TextView
         android:id="@+id/audio_title_tv"
@@ -54,18 +56,19 @@
 
     <ImageButton
         android:id="@+id/custom_prev_ib"
+        style="@style/CustomExoMediaButton.SkipPrev"
         android:layout_width="@dimen/clickable_std"
         android:layout_height="@dimen/clickable_std"
         android:layout_marginStart="@dimen/clickable_std"
         android:layout_marginTop="@dimen/padding_std"
         android:adjustViewBounds="true"
-        style="@style/CustomExoMediaButton.SkipPrev"
         android:contentDescription="@string/prev_btn_desc"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/exo_progress" />
 
     <ImageButton
         android:id="@+id/exo_play"
+        style="@style/CustomExoMediaButton.Play"
         android:layout_width="@dimen/clickable_std"
         android:layout_height="@dimen/clickable_std"
         android:layout_marginTop="@dimen/padding_std"
@@ -73,11 +76,11 @@
         android:contentDescription="@string/play_btn_desc"
         app:layout_constraintEnd_toStartOf="@id/custom_next_ib"
         app:layout_constraintStart_toEndOf="@id/custom_prev_ib"
-        app:layout_constraintTop_toBottomOf="@id/exo_progress"
-        style="@style/CustomExoMediaButton.Play"/>
+        app:layout_constraintTop_toBottomOf="@id/exo_progress" />
 
     <ImageButton
         android:id="@+id/exo_pause"
+        style="@style/CustomExoMediaButton.Pause"
         android:layout_width="@dimen/clickable_std"
         android:layout_height="@dimen/clickable_std"
         android:layout_marginTop="@dimen/padding_std"
@@ -85,21 +88,19 @@
         android:contentDescription="@string/pause_btn_desc"
         app:layout_constraintEnd_toStartOf="@id/custom_next_ib"
         app:layout_constraintStart_toEndOf="@id/custom_prev_ib"
-        app:layout_constraintTop_toBottomOf="@id/exo_progress"
-        style="@style/CustomExoMediaButton.Pause"/>
-    
+        app:layout_constraintTop_toBottomOf="@id/exo_progress" />
+
     <ImageButton
         android:id="@+id/custom_next_ib"
+        style="@style/CustomExoMediaButton.SkipNext"
         android:layout_width="@dimen/clickable_std"
         android:layout_height="@dimen/clickable_std"
         android:layout_marginTop="@dimen/padding_std"
         android:layout_marginEnd="@dimen/clickable_std"
         android:adjustViewBounds="true"
         android:contentDescription="@string/next_btn_desc"
-        style="@style/CustomExoMediaButton.SkipNext"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/exo_progress"/>
-
+        app:layout_constraintTop_toBottomOf="@id/exo_progress" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

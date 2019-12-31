@@ -10,31 +10,31 @@ import androidx.recyclerview.widget.RecyclerView
 import com.adrienshen_n_vlad.jus_audio.R
 import com.adrienshen_n_vlad.jus_audio.persistence.entities.JusAudios
 
-class PlayListAdapter(
-    private val playListItems: ArrayList<JusAudios>,
-    private val playListItemClickListener: PlayListItemClickListener
-) : RecyclerView.Adapter<PlayListAdapter.PlayListViewHolder>() {
+class MyCollectionAdapter(
+    private val myCollectionItems: ArrayList<JusAudios>,
+    private val myCollectionItemClickListener: MyCollectionItemClickListener
+) : RecyclerView.Adapter<MyCollectionAdapter.MyCollectionViewHolder>() {
 
-    interface PlayListItemClickListener {
-        fun onFavIconClicked(adapterPosition: Int, clickedAudio : JusAudios) {}
-        fun onPlayIconClicked(adapterPosition: Int, clickedAudio : JusAudios) {}
-        fun onRemoveIoonClicked(adapterPosition: Int, clickedAudio : JusAudios) {}
+    interface MyCollectionItemClickListener {
+        fun onFavIconClicked(adapterPosition: Int, clickedAudio: JusAudios) {}
+        fun onPlayIconClicked(adapterPosition: Int, clickedAudio: JusAudios) {}
+        fun onRemoveIoonClicked(adapterPosition: Int, clickedAudio: JusAudios) {}
 
     }
 
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PlayListViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyCollectionViewHolder {
         val viewItem = LayoutInflater.from(parent.context)
-            .inflate(R.layout.rv_item_playlist, parent, false)
-        return PlayListViewHolder(viewItem, playListItemClickListener)
+            .inflate(R.layout.rv_item_my_collection, parent, false)
+        return MyCollectionViewHolder(viewItem, myCollectionItemClickListener)
     }
 
     override fun getItemCount(): Int {
-        return playListItems.size
+        return myCollectionItems.size
     }
 
-    override fun onBindViewHolder(holder: PlayListViewHolder, position: Int) {
-        val product = playListItems[position]
+    override fun onBindViewHolder(holder: MyCollectionViewHolder, position: Int) {
+        val product = myCollectionItems[position]
         holder.bindData(product)
     }
 
@@ -47,11 +47,11 @@ class PlayListAdapter(
         return position
     }
 
-    fun getItemAtPos(adapterPosition: Int): JusAudios = playListItems[adapterPosition]
+    fun getItemAtPos(adapterPosition: Int): JusAudios = myCollectionItems[adapterPosition]
 
-    class PlayListViewHolder(
+    class MyCollectionViewHolder(
         itemView: View,
-        private val playListItemClickListener: PlayListItemClickListener
+        private val myCollectionItemClickListener: MyCollectionItemClickListener
 
     ) : RecyclerView.ViewHolder(itemView) {
 
@@ -63,29 +63,29 @@ class PlayListAdapter(
         private val removeFromPlaylistIv =
             itemView.findViewById<ImageView>(R.id.remove_from_playlist_iv)
         private val playNowIv =
-            itemView.findViewById<ImageView>(R.id.add_to_collection)
+            itemView.findViewById<ImageView>(R.id.add_or_remove_collection)
         private val addToFavIv = itemView.findViewById<ImageView>(R.id.add_to_fav_iv)
 
-        fun bindData(playListItem: JusAudios) {
+        fun bindData(myCollectionItem: JusAudios) {
             /*todo Glide.with(itemView.context)
-                .load(playListItem.audioCoverThumbnailUrl)
+                .load(myCollectionItem.audioCoverThumbnailUrl)
                 .placeholder(R.drawable.ic_music_note_black)
                 .error(R.drawable.ic_music_note_black)
                 .into(audioCoverIv)*/
 
-            audioTitleTv.text = playListItem.audioTitle
-            audioAuthorTv.text = playListItem.audioAuthor
+            audioTitleTv.text = myCollectionItem.audioTitle
+            audioAuthorTv.text = myCollectionItem.audioAuthor
 
 
             playNowIv.setOnClickListener {
-                playListItemClickListener.onPlayIconClicked(adapterPosition, playListItem)
+                myCollectionItemClickListener.onPlayIconClicked(adapterPosition, myCollectionItem)
             }
 
             removeFromPlaylistIv.setOnClickListener {
-                playListItemClickListener.onRemoveIoonClicked(adapterPosition, playListItem)
+                myCollectionItemClickListener.onRemoveIoonClicked(adapterPosition, myCollectionItem)
             }
 
-            if (playListItem.audioIsFavorite) {
+            if (myCollectionItem.audioIsFavorite) {
                 addToFavIv.setImageDrawable(
                     ContextCompat.getDrawable(
                         addToFavIv.context,
@@ -103,7 +103,7 @@ class PlayListAdapter(
             }
 
             addToFavIv.setOnClickListener {
-                playListItemClickListener.onFavIconClicked(adapterPosition, playListItem)
+                myCollectionItemClickListener.onFavIconClicked(adapterPosition, myCollectionItem)
             }
         }
     }

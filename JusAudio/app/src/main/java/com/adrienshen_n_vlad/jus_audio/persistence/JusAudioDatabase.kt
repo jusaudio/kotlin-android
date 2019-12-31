@@ -6,24 +6,18 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.adrienshen_n_vlad.jus_audio.persistence.dao.JusAudiosDao
 import com.adrienshen_n_vlad.jus_audio.persistence.dao.JusAudiosFtsDao
-import com.adrienshen_n_vlad.jus_audio.persistence.dao.PlayHistoryDao
-import com.adrienshen_n_vlad.jus_audio.persistence.dao.RecommendedAudiosDao
 import com.adrienshen_n_vlad.jus_audio.persistence.entities.JusAudios
 import com.adrienshen_n_vlad.jus_audio.persistence.entities.JusAudiosFts
-import com.adrienshen_n_vlad.jus_audio.persistence.entities.PlayHistory
-import com.adrienshen_n_vlad.jus_audio.persistence.entities.RecommendedAudios
 import com.adrienshen_n_vlad.jus_audio.utility_classes.JusAudioConstants.DATABASE_NAME
 
 @Database(
-    entities = [JusAudios::class, JusAudiosFts::class, PlayHistory::class, RecommendedAudios::class],
+    entities = [JusAudios::class, JusAudiosFts::class],
     version = 1,
     exportSchema = false
 )
 abstract class JusAudioDatabase : RoomDatabase() {
     abstract fun jusAudiosDao(): JusAudiosDao
     abstract fun jusAudiosFtsDao(): JusAudiosFtsDao
-    abstract fun playHistoryDao(): PlayHistoryDao
-    abstract fun recommendedAudiosDao(): RecommendedAudiosDao
 
     companion object {
         // Singleton prevents multiple instances of database opening at the
