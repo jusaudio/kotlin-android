@@ -24,4 +24,7 @@ object JusAudioConstants {
     const val AUDIO_IS_IN_MY_COLLECTION = "is_in_my_collection"
     const val DEFAULT_LANG_ID = 0
 
+    //notifications
+    const val AUDIO_PLAYER_NOTIFICATION_CHANNEL_ID = "com.adrienshen_n_vlad.jus_audio.player"
+
 }

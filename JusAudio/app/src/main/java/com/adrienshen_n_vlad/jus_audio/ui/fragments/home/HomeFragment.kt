@@ -2,6 +2,7 @@ package com.adrienshen_n_vlad.jus_audio.ui.fragments.home
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -21,6 +22,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.HORIZONTAL
 import androidx.recyclerview.widget.RecyclerView.VERTICAL
 import com.adrienshen_n_vlad.jus_audio.R
+import com.adrienshen_n_vlad.jus_audio.background_work.AudioPlayerService
 import com.adrienshen_n_vlad.jus_audio.persistence.entities.JusAudios
 import com.adrienshen_n_vlad.jus_audio.ui.rv_adapters.MyCollectionAdapter
 import com.adrienshen_n_vlad.jus_audio.ui.rv_adapters.RecommendedListAdapter
@@ -148,6 +150,7 @@ class HomeFragment : Fragment(), RecommendedListAdapter.RecommendedItemClickList
                     HomeViewModel.DataState.LOADED -> {
                         currentlyLoadingHistoryList = false
                         myCollectionAdapter.notifyDataSetChanged()
+                        startAudioPlayerService()
                     }
                     HomeViewModel.DataState.ITEM_ADDED -> {
                         val pos = homeViewModel.recentlyModifiedMyCollectionPos
@@ -244,11 +247,18 @@ class HomeFragment : Fragment(), RecommendedListAdapter.RecommendedItemClickList
 
     override fun onPlayIconClicked(adapterPosition: Int, clickedAudio: JusAudios) {
         homeViewModel.currentlyPlayingSongAtPos = adapterPosition
-        playAudio()
+        //todo? playAudio()
     }
 
 
     /*************** AUDIO PLAYER ********************************/
+    private fun startAudioPlayerService(){
+        if(homeViewModel.myCollection.size > 0 ) {
+            val intent = Intent(context!!, AudioPlayerService::class.java)
+            intent.putExtra(AudioPlayerService.INTENT_KEY, homeViewModel.myCollection)
+            Util.startForegroundService(context!!, intent)
+        }
+    }
 
     private fun expandBottomPlayer() {
         if (bottomSheetBehavior.state != BottomSheetBehavior.STATE_EXPANDED)

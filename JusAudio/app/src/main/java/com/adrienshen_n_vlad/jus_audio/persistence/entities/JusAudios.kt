@@ -1,5 +1,7 @@
 package com.adrienshen_n_vlad.jus_audio.persistence.entities
 
+import android.os.Parcel
+import android.os.Parcelable
 import androidx.annotation.Keep
 import androidx.room.ColumnInfo
 import androidx.room.Entity
@@ -37,5 +39,46 @@ data class JusAudios(
     @ColumnInfo(name = AUDIO_IS_RECOMMENDED) var audioIsRecommended: Boolean,
     @ColumnInfo(name = AUDIO_IS_IN_MY_COLLECTION) var audioIsInMyCollection: Boolean,
     @ColumnInfo(name = AUDIO_INFO_LANG_ID) var audioInfoLanguageId: Int
-)
+) : Parcelable {
+
+    constructor(parcel: Parcel) : this(
+        parcel.readValue(Int::class.java.classLoader) as? Int,
+        parcel.readString()!!,
+        parcel.readString()!!,
+        parcel.readString()!!,
+        parcel.readString()!!,
+        parcel.readString()!!,
+        parcel.readByte() != 0.toByte(),
+        parcel.readByte() != 0.toByte(),
+        parcel.readByte() != 0.toByte(),
+        parcel.readInt()
+    )
+    override fun writeToParcel(parcel: Parcel, flags: Int) {
+        parcel.writeValue(rowId)
+        parcel.writeString(audioTitle)
+        parcel.writeString(audioAuthor)
+        parcel.writeString(audioStreamUrl)
+        parcel.writeString(audioSearchTags)
+        parcel.writeString(audioCoverThumbnailUrl)
+        parcel.writeByte(if (audioIsFavorite) 1 else 0)
+        parcel.writeByte(if (audioIsRecommended) 1 else 0)
+        parcel.writeByte(if (audioIsInMyCollection) 1 else 0)
+        parcel.writeInt(audioInfoLanguageId)
+    }
+
+    override fun describeContents(): Int {
+        return 0
+    }
+
+    companion object CREATOR : Parcelable.Creator<JusAudios> {
+        override fun createFromParcel(parcel: Parcel): JusAudios {
+            return JusAudios(parcel)
+        }
+
+        override fun newArray(size: Int): Array<JusAudios?> {
+            return arrayOfNulls(size)
+        }
+    }
+
+}
 

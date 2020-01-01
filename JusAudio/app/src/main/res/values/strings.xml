@@ -17,4 +17,7 @@
     <string name="player_is_idle_txt">Click play</string>
     <string name="streaming_txt">Streaming…</string>
     <string name="toggle_in_collection_icon_desc">Add to or remove from my collection</string>
+    <string name="audio_player_service_lbl">JusAudio Background Player</string>
+    <string name="audio_player_channel_name">JusAudio Player</string>
+    <string name="audio_player_channel_desc">Notifications on ongoing audios</string>
 </resources>
