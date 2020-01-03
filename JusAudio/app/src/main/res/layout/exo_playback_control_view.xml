@@ -14,7 +14,7 @@
         android:gravity="start|center_vertical"
         android:text="@string/app_name"
         android:textColor="@color/colorAccent"
-        android:textSize="@dimen/input_btn_subtitle_txt"
+        android:textSize="@dimen/paragraph_txt"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         android:drawableStart="@drawable/ic_queue_music_accent_24dp"
@@ -55,7 +55,7 @@
         app:layout_constraintTop_toBottomOf="@id/audio_author_tv" />
 
     <ImageButton
-        android:id="@+id/custom_prev_ib"
+        android:id="@+id/exo_prev"
         style="@style/CustomExoMediaButton.SkipPrev"
         android:layout_width="@dimen/clickable_std"
         android:layout_height="@dimen/clickable_std"
@@ -74,8 +74,8 @@
         android:layout_marginTop="@dimen/padding_std"
         android:adjustViewBounds="true"
         android:contentDescription="@string/play_btn_desc"
-        app:layout_constraintEnd_toStartOf="@id/custom_next_ib"
-        app:layout_constraintStart_toEndOf="@id/custom_prev_ib"
+        app:layout_constraintEnd_toStartOf="@id/exo_next"
+        app:layout_constraintStart_toEndOf="@id/exo_prev"
         app:layout_constraintTop_toBottomOf="@id/exo_progress" />
 
     <ImageButton
@@ -86,12 +86,12 @@
         android:layout_marginTop="@dimen/padding_std"
         android:adjustViewBounds="true"
         android:contentDescription="@string/pause_btn_desc"
-        app:layout_constraintEnd_toStartOf="@id/custom_next_ib"
-        app:layout_constraintStart_toEndOf="@id/custom_prev_ib"
+        app:layout_constraintEnd_toStartOf="@id/exo_next"
+        app:layout_constraintStart_toEndOf="@id/exo_prev"
         app:layout_constraintTop_toBottomOf="@id/exo_progress" />
 
     <ImageButton
-        android:id="@+id/custom_next_ib"
+        android:id="@+id/exo_next"
         style="@style/CustomExoMediaButton.SkipNext"
         android:layout_width="@dimen/clickable_std"
         android:layout_height="@dimen/clickable_std"

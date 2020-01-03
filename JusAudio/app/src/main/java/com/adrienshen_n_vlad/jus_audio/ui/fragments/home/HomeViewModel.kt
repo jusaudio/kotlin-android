@@ -266,5 +266,9 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         myCollectionState.value = DataState.LOADING
     }
 
+    fun setCurrentlyPlayingFromAudioPos(clickedAudio: JusAudios) {
+        currentlyPlayingSongAtPos = myCollection.indexOf(clickedAudio)
+    }
+
 
 }

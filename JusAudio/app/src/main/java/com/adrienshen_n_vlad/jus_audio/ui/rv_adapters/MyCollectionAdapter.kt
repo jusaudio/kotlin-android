@@ -17,7 +17,7 @@ class MyCollectionAdapter(
 
     interface MyCollectionItemClickListener {
         fun onFavIconClicked(adapterPosition: Int, clickedAudio: JusAudios) {}
-        fun onPlayIconClicked(adapterPosition: Int, clickedAudio: JusAudios) {}
+        fun onPlayIconClicked(clickedAudio: JusAudios) {}
         fun onRemoveIoonClicked(adapterPosition: Int, clickedAudio: JusAudios) {}
 
     }
@@ -78,7 +78,7 @@ class MyCollectionAdapter(
 
 
             playNowIv.setOnClickListener {
-                myCollectionItemClickListener.onPlayIconClicked(adapterPosition, myCollectionItem)
+                myCollectionItemClickListener.onPlayIconClicked( myCollectionItem)
             }
 
             removeFromPlaylistIv.setOnClickListener {

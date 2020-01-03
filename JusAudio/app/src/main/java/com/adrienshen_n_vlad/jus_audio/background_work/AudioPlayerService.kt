@@ -6,17 +6,14 @@ import android.app.Service
 import android.content.Intent
 import android.graphics.Bitmap
 import android.net.Uri
+import android.os.Binder
 import android.os.IBinder
-import android.support.v4.media.session.MediaSessionCompat
 import android.util.Log
 import com.adrienshen_n_vlad.jus_audio.MainActivity
 import com.adrienshen_n_vlad.jus_audio.R
 import com.adrienshen_n_vlad.jus_audio.persistence.entities.JusAudios
 import com.adrienshen_n_vlad.jus_audio.utility_classes.JusAudioConstants.AUDIO_PLAYER_NOTIFICATION_CHANNEL_ID
-import com.google.android.exoplayer2.ExoPlaybackException
-import com.google.android.exoplayer2.ExoPlayer
-import com.google.android.exoplayer2.Player
-import com.google.android.exoplayer2.SimpleExoPlayer
+import com.google.android.exoplayer2.*
 import com.google.android.exoplayer2.source.ConcatenatingMediaSource
 import com.google.android.exoplayer2.source.MediaSource
 import com.google.android.exoplayer2.source.ProgressiveMediaSource
@@ -25,63 +22,17 @@ import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 
 private const val LOG_TAG = "AudioPlayerService"
 private const val PLAYBACK_NOTIFICATION_ID = 129
+
 class AudioPlayerService : Service() {
 
-    companion object{
-        const val INTENT_KEY = "PLAY_LIST"
-    }
+    var listenerIsSet: Boolean = false
 
+    private val binder = LocalBinder()
     private var audioPlayer: SimpleExoPlayer? = null
     private var playerNotificationManager: PlayerNotificationManager? = null
     private val concatenatingMediaSource = ConcatenatingMediaSource()
-    private val audios = ArrayList<JusAudios>()
+    private val playList = ArrayList<JusAudios>()
 
-    private val audioPlaybackStateListener: Player.EventListener by lazy {
-        object : Player.EventListener {
-            override fun onPositionDiscontinuity(@Player.DiscontinuityReason reason: Int) {
-                Log.d(LOG_TAG, "audioPBackStateListener - onPositionDiscontinuity")
-            }
-
-            override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
-                val stateString: String
-                when (playbackState) {
-                    ExoPlayer.STATE_IDLE -> {
-                        stateString = "ExoPlayer.STATE_IDLE"
-                    }
-                    ExoPlayer.STATE_BUFFERING -> {
-                        stateString = "ExoPlayer.STATE_BUFFERING"
-                    }
-                    ExoPlayer.STATE_READY -> {
-                        stateString = "ExoPlayer.STATE_READY"
-                    }
-                    ExoPlayer.STATE_ENDED -> {
-                        stateString = "ExoPlayer.STATE_ENDED"
-                    }
-                    else -> {
-                        stateString = "UNKNOWN_STATE"
-                    }
-                }
-
-                Log.d(
-                    LOG_TAG,
-                    "audioPBackStateListener- changed state to " + stateString
-                            + " playWhenReady: " + playWhenReady.toString()
-                )
-            }
-
-            override fun onPlayerError(error: ExoPlaybackException) {
-                super.onPlayerError(error)
-                Log.d(
-                    LOG_TAG,
-                    "audioPBackStateListener() an error occurred ${error.message}",
-                    error.cause
-                )
-            }
-
-        }
-
-
-    }
 
     private val mediaDescriptionAdapter: PlayerNotificationManager.MediaDescriptionAdapter by lazy {
         object : PlayerNotificationManager.MediaDescriptionAdapter {
@@ -96,11 +47,15 @@ class AudioPlayerService : Service() {
             }
 
             override fun getCurrentContentText(player: Player): String? {
-                return audios[player.currentWindowIndex].audioAuthor
+                return if(player.currentWindowIndex < playList.size)
+                            playList[player.currentWindowIndex].audioAuthor
+                        else ""
             }
 
             override fun getCurrentContentTitle(player: Player): String {
-                return audios[player.currentWindowIndex].audioTitle
+                return if(player.currentWindowIndex < playList.size)
+                                            playList[player.currentWindowIndex].audioTitle
+                                         else ""
             }
 
             override fun getCurrentLargeIcon(
@@ -132,29 +87,24 @@ class AudioPlayerService : Service() {
     }
 
 
-    override fun onCreate() {
-        super.onCreate()
-        Log.d(LOG_TAG, " onCreate() called")
+    fun setListener(listener: Player.EventListener) {
+        audioPlayer!!.addListener(listener)
+        listenerIsSet = true
     }
 
-    private fun initAudioPlayer() {
-        //player state
-        audioPlayer = SimpleExoPlayer.Builder(this).build()
-        audioPlayer!!.addListener(audioPlaybackStateListener)
+    fun removeListener(listener: Player.EventListener) {
+        audioPlayer!!.removeListener(listener)
+        listenerIsSet = false
     }
 
-    private fun createPlayList() {
-        concatenatingMediaSource.clear()
-        for (audio in audios)
-            concatenatingMediaSource.addMediaSource(
-                buildMediaSource(
-                    audio.rowId!!,
-                    audio.audioStreamUrl
-                )
-            )
+
+    fun getTitleAndAuthor(): Array<String> {
+        val currentlyPlaying = playList[audioPlayer!!.currentWindowIndex]
+        return arrayOf(currentlyPlaying.audioTitle, currentlyPlaying.audioAuthor)
     }
 
-    private fun buildMediaSource(audioId: Int, audioUrlStr: String): MediaSource? {
+
+    private fun buildMediaSource(audioUrlStr: String): MediaSource? {
         //todo use real audioUrlStr
         val uri = Uri.parse(getString(R.string.dummy_audio_url))
 
@@ -164,18 +114,70 @@ class AudioPlayerService : Service() {
                 getString(R.string.app_name)
             )
         )
-            .setTag(audioId)
             .createMediaSource(uri)
 
     }
 
-    private fun play() {
+    /*************** playback ************/
+    private fun clearPlayList() {
+        concatenatingMediaSource.clear()
+        playList.clear()
+    }
+
+    fun loadPlayList(newAudios: ArrayList<JusAudios>) {
+        Log.d(LOG_TAG, "loadPlayList() called with " + newAudios.size.toString() + " audios")
+        if (newAudios.size > 0) {
+            clearPlayList()
+            newAudios.forEachIndexed { index, newAudio ->
+                playList.add(index, newAudio)
+                concatenatingMediaSource.addMediaSource(
+                    index,
+                    buildMediaSource(
+                        audioUrlStr = newAudio.audioStreamUrl
+                    )
+                )
+            }
+        }
+    }
+
+    private fun preparePlayListAndNotifyUser() {
         audioPlayer!!.prepare(concatenatingMediaSource)
         audioPlayer!!.playWhenReady = true
+        notifyUser()
     }
 
 
-    private fun createNotification() {
+    fun addToPlayList(position: Int, audio: JusAudios) {
+        Log.d(LOG_TAG, "addToPlayList() ${audio.audioTitle} at pos $position")
+        playList.add(position, audio)
+        concatenatingMediaSource.addMediaSource(
+            position,
+            buildMediaSource(
+                audioUrlStr = audio.audioStreamUrl
+            )
+        )
+    }
+
+    fun removeFromPlayList(index: Int) {
+        Log.d(LOG_TAG, "removeFromPlayList() called")
+        playList.removeAt(index)
+        concatenatingMediaSource.removeMediaSource(index)
+        if(playList.size == 0) {
+            clearPlayList()
+            audioPlayer!!.playWhenReady = false
+        }
+
+    }
+
+    fun playAudioInPlayList(audio: JusAudios) {
+        val index = playList.indexOf(audio)
+        audioPlayer!!.seekTo(index, C.TIME_UNSET) //does not seem to work
+        preparePlayListAndNotifyUser()
+    }
+
+
+
+    private fun notifyUser() {
         playerNotificationManager = PlayerNotificationManager.createWithNotificationChannel(
             this,
             AUDIO_PLAYER_NOTIFICATION_CHANNEL_ID,
@@ -190,21 +192,25 @@ class AudioPlayerService : Service() {
 
     }
 
-
+    /** Class used for the client Binder.  Because we know this service always
+     * runs in the same process as its clients, we don't need to deal with IPC.
+     */
+    inner class LocalBinder : Binder() {
+        // Return this instance of LocalService so clients can call public methods
+        fun getService(): AudioPlayerService = this@AudioPlayerService
+    }
 
 
     /**************** SERVICE LIFE CYCLE ***************/
-    override fun onBind(intent: Intent?): IBinder?  = null
+    override fun onBind(intent: Intent?): IBinder? {
+        Log.d(LOG_TAG, " onBind() called")
+        return binder
+    }
 
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-
         Log.d(LOG_TAG, " onStartCommand() called")
-        audios.addAll(intent!!.getParcelableArrayListExtra(INTENT_KEY)!!)
-        initAudioPlayer()
-        createPlayList()
-        play()
-        createNotification()
+        audioPlayer = SimpleExoPlayer.Builder(this).build()
         return START_STICKY
     }
 
@@ -221,4 +227,6 @@ class AudioPlayerService : Service() {
             audioPlayer = null
         }
     }
+
+    fun getPlayer(): Player? =  audioPlayer
 }

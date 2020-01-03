@@ -1,10 +1,12 @@
 package com.adrienshen_n_vlad.jus_audio.ui.fragments.home
 
 import android.annotation.SuppressLint
+import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.net.Uri
+import android.content.ServiceConnection
 import android.os.Bundle
+import android.os.IBinder
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -29,12 +31,7 @@ import com.adrienshen_n_vlad.jus_audio.ui.rv_adapters.RecommendedListAdapter
 import com.google.android.exoplayer2.ExoPlaybackException
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.Player
-import com.google.android.exoplayer2.SimpleExoPlayer
-import com.google.android.exoplayer2.source.ConcatenatingMediaSource
-import com.google.android.exoplayer2.source.MediaSource
-import com.google.android.exoplayer2.source.ProgressiveMediaSource
 import com.google.android.exoplayer2.ui.PlayerView
-import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.util.Util
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 
@@ -62,12 +59,27 @@ class HomeFragment : Fragment(), RecommendedListAdapter.RecommendedItemClickList
     private var currentlyLoadingRecommendedList: Boolean = true
     private var currentlyLoadingHistoryList: Boolean = true
     private lateinit var bottomSheetBehavior: BottomSheetBehavior<View>
-    private lateinit var audioPlayerView: PlayerView
-    private lateinit var audioTitleTv: TextView
-    private lateinit var skipToNextIBtn: ImageButton
-    private lateinit var skipToPrevIBtn: ImageButton
-    private lateinit var exoPlayerPlayListConcatenatingMediaSource: ConcatenatingMediaSource
-    private var audioPlayer: SimpleExoPlayer? = null
+    private lateinit var audioPlayerView : PlayerView
+    private lateinit var audioTitleTv : TextView
+    private lateinit var audioAuthorTv : TextView
+    private lateinit var audioPlayerHintTv: TextView
+    private lateinit var audioService: AudioPlayerService
+    private var audioServiceIsBound: Boolean = false
+    private val audioServiceConnection = object : ServiceConnection {
+
+        override fun onServiceConnected(className: ComponentName, service: IBinder) {
+            Log.d(LOG_TAG, "audioServiceConnection.onServiceConnected()")
+            val binder = service as AudioPlayerService.LocalBinder
+            audioService = binder.getService()
+            audioServiceIsBound = true
+            notifyServiceOnPlaylistChanges()
+        }
+
+        override fun onServiceDisconnected(arg0: ComponentName) {
+            Log.d(LOG_TAG, "audioServiceConnection.onDisconnected()")
+            audioServiceIsBound = false
+        }
+    }
 
 
     @SuppressLint("ClickableViewAccessibility")
@@ -76,18 +88,13 @@ class HomeFragment : Fragment(), RecommendedListAdapter.RecommendedItemClickList
         menuIv = view.findViewById(R.id.menu_iv)
         recommendationsRv = view.findViewById(R.id.recommendations_rv)
         myCollectionRv = view.findViewById(R.id.my_collection_rv)
-        audioPlayerView = view.findViewById(R.id.audio_player_view)
-        audioPlayerView.controllerHideOnTouch = false
-        audioTitleTv = view.findViewById(R.id.audio_title_tv)
         view.findViewById<TextView>(R.id.audio_player_hint_tv)
             .setOnClickListener { expandBottomPlayer() }
 
-        skipToPrevIBtn = view.findViewById(R.id.custom_prev_ib)
-        skipToPrevIBtn.setOnClickListener { playPrevAudio() }
-
-        skipToNextIBtn = view.findViewById(R.id.custom_next_ib)
-        skipToNextIBtn.setOnClickListener { playNextAudio() }
-
+        audioPlayerView = view.findViewById(R.id.audio_player_view)
+        audioTitleTv = view.findViewById(R.id.audio_title_tv)
+        audioAuthorTv = view.findViewById(R.id.audio_author_tv)
+        audioPlayerHintTv = view.findViewById(R.id.audio_player_hint_tv)
         view.findViewById<ImageButton>(R.id.exo_play).setOnClickListener { playAudio() }
 
 
@@ -126,6 +133,7 @@ class HomeFragment : Fragment(), RecommendedListAdapter.RecommendedItemClickList
                     }
                     HomeViewModel.DataState.ITEM_ADDED -> {
                         recommendedListAdapter.notifyItemInserted(homeViewModel.recentlyModifiedRecommendedAudioPos)
+
                     }
                     HomeViewModel.DataState.ITEM_MODIFIED -> {
                         recommendedListAdapter.notifyItemChanged(homeViewModel.recentlyModifiedRecommendedAudioPos)
@@ -150,18 +158,21 @@ class HomeFragment : Fragment(), RecommendedListAdapter.RecommendedItemClickList
                     HomeViewModel.DataState.LOADED -> {
                         currentlyLoadingHistoryList = false
                         myCollectionAdapter.notifyDataSetChanged()
-                        startAudioPlayerService()
+                        notifyServiceOnPlaylistChanges()
                     }
                     HomeViewModel.DataState.ITEM_ADDED -> {
                         val pos = homeViewModel.recentlyModifiedMyCollectionPos
                         myCollectionRv.smoothScrollToPosition(pos)
                         myCollectionAdapter.notifyItemInserted(pos)
+                        notifyServiceOnPlaylistInsertion(pos)
                     }
                     HomeViewModel.DataState.ITEM_MODIFIED -> {
                         myCollectionAdapter.notifyItemChanged(homeViewModel.recentlyModifiedMyCollectionPos)
                     }
                     HomeViewModel.DataState.ITEM_REMOVED -> {
-                        myCollectionAdapter.notifyItemRemoved(homeViewModel.recentlyModifiedMyCollectionPos)
+                        val pos  = homeViewModel.recentlyModifiedMyCollectionPos
+                        myCollectionAdapter.notifyItemRemoved(pos)
+                        notifyServiceOnPlaylistDeletion(pos)
                     }
 
                     null -> {
@@ -245,58 +256,40 @@ class HomeFragment : Fragment(), RecommendedListAdapter.RecommendedItemClickList
     }
 
 
-    override fun onPlayIconClicked(adapterPosition: Int, clickedAudio: JusAudios) {
-        homeViewModel.currentlyPlayingSongAtPos = adapterPosition
-        //todo? playAudio()
+    override fun onPlayIconClicked(clickedAudio: JusAudios) {
+        homeViewModel.setCurrentlyPlayingFromAudioPos(clickedAudio)
+        playAudio()
     }
 
 
     /*************** AUDIO PLAYER ********************************/
-    private fun startAudioPlayerService(){
-        if(homeViewModel.myCollection.size > 0 ) {
-            val intent = Intent(context!!, AudioPlayerService::class.java)
-            intent.putExtra(AudioPlayerService.INTENT_KEY, homeViewModel.myCollection)
-            Util.startForegroundService(context!!, intent)
-        }
-    }
-
-    private fun expandBottomPlayer() {
-        if (bottomSheetBehavior.state != BottomSheetBehavior.STATE_EXPANDED)
-            bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
-    }
-
     private val audioPlaybackStateListener: Player.EventListener by lazy {
         object : Player.EventListener {
             override fun onPositionDiscontinuity(@Player.DiscontinuityReason reason: Int) {
-                Log.d(LOG_TAG, "audioPBackStateListener - onPositionDiscontinuity")
+                audioTitleTv.text = audioService.getTitleAndAuthor()[0]
+                audioAuthorTv.text = audioService.getTitleAndAuthor()[0]
+                Log.d(LOG_TAG, "audioPBackStateListener - onPositionDiscontinuity $reason")
             }
 
             override fun onPlayerStateChanged(playWhenReady: Boolean, playbackState: Int) {
-                val stateString: String
                 when (playbackState) {
                     ExoPlayer.STATE_IDLE -> {
-                        stateString = "ExoPlayer.STATE_IDLE"
+                        audioPlayerHintTv.setText(R.string.app_name)
                     }
                     ExoPlayer.STATE_BUFFERING -> {
-                        stateString = "ExoPlayer.STATE_BUFFERING"
+                        audioPlayerHintTv.setText(R.string.buffering_txt)
                     }
                     ExoPlayer.STATE_READY -> {
-                        stateString = "ExoPlayer.STATE_READY"
+                        audioPlayerHintTv.setText(R.string.now_playing_txt)
                     }
                     ExoPlayer.STATE_ENDED -> {
-                        stateString = "ExoPlayer.STATE_ENDED"
-                        playNextAudio()
+                        audioPlayerHintTv.setText(R.string.app_name)
                     }
                     else -> {
-                        stateString = "UNKNOWN_STATE"
+                        audioPlayerHintTv.setText(R.string.app_name)
                     }
                 }
 
-                Log.d(
-                    LOG_TAG,
-                    "audioPBackStateListener- changed state to " + stateString
-                            + " playWhenReady: " + playWhenReady
-                )
             }
 
             override fun onPlayerError(error: ExoPlaybackException) {
@@ -312,75 +305,75 @@ class HomeFragment : Fragment(), RecommendedListAdapter.RecommendedItemClickList
 
 
     }
+    private fun startAndBindToAudioService(){
+        if (!audioServiceIsBound) {
+            Intent(context!!, AudioPlayerService::class.java).also { intent ->
+                Util.startForegroundService(context!!, intent)
+                context!!.bindService(intent, audioServiceConnection, Context.BIND_AUTO_CREATE)
+            }
+        }
+    }
 
-    private fun buildMediaSource(audioUrlStr: String): MediaSource? {
-        //todo use real audioUrlStr
-        val uri = Uri.parse(getString(R.string.dummy_audio_url))
 
-        return ProgressiveMediaSource.Factory(
-            DefaultDataSourceFactory(
-                context!!,
-                getString(R.string.app_name)
-            )
-        )
-            .setTag(homeViewModel.currentlyPlayingSongAtPos)
-            .createMediaSource(uri)
+    private fun notifyServiceOnPlaylistChanges(){
+        Log.d(LOG_TAG,"notifyServiceOnPlaylistChanges() called")
+        if(audioServiceIsBound){
+            Log.d(LOG_TAG,"service is bound")
+            audioService.loadPlayList(homeViewModel.myCollection)
+        }
+    }
+
+    private fun notifyServiceOnPlaylistInsertion(position : Int){
+        if(audioServiceIsBound){
+            audioService.addToPlayList(position, homeViewModel.myCollection[position])
+        }
+    }
+
+    private fun notifyServiceOnPlaylistDeletion(position : Int) {
+        if (audioServiceIsBound) {
+            audioService.removeFromPlayList(position)
+        }
 
     }
 
-    private fun initAudioPlayer(){
-        //player state
-        audioPlayer = SimpleExoPlayer.Builder(context!!).build()
-        exoPlayerPlayListConcatenatingMediaSource = ConcatenatingMediaSource()
-        audioPlayerView.player = audioPlayer
-        audioPlayer!!.addListener(audioPlaybackStateListener)
+    private fun expandBottomPlayer() {
+        Log.d(LOG_TAG,"expandBottomPlayer() called")
+        if (bottomSheetBehavior.state != BottomSheetBehavior.STATE_EXPANDED)
+            bottomSheetBehavior.state = BottomSheetBehavior.STATE_EXPANDED
+
+        Log.d(LOG_TAG,"expandBottomPlayer() finished at state " + bottomSheetBehavior.state.toString())
     }
 
 
     private fun playAudio() {
-        if(audioPlayer == null) initAudioPlayer()
-        if (homeViewModel.myCollection.size > 0) {
-            val audioToPlay = homeViewModel.myCollection[homeViewModel.currentlyPlayingSongAtPos]
-            expandBottomPlayer()
+        if(audioServiceIsBound) {
 
-            audioTitleTv.text = audioToPlay.audioTitle
+            initAudioPlayer()
+            if( homeViewModel.myCollection.size > 0 ) {
+                try {
+                    val audioToPlay =
+                        homeViewModel.myCollection[homeViewModel.currentlyPlayingSongAtPos]
+                    expandBottomPlayer()
 
-            try {
-                Log.d(LOG_TAG, "playingAudio with exo player ${audioToPlay.audioTitle}")
-                audioPlayer!!.playWhenReady = true
-                val mediaSourceToPlay =
-                    buildMediaSource(homeViewModel.myCollection[homeViewModel.currentlyPlayingSongAtPos].audioStreamUrl)
-                audioPlayer!!.prepare(mediaSourceToPlay!!, true, true)
+                    Log.d(LOG_TAG, "playingAudio with exo player ${audioToPlay.audioTitle}")
+                    audioService.playAudioInPlayList(audioToPlay)
 
-            } catch (e: Exception) {
-                Log.d(LOG_TAG, "playingAudio, exception thrown ${e.message}", e.cause)
+                } catch (e: Exception) {
+                    Log.d(LOG_TAG, "playingAudio, exception thrown ${e.message}", e.cause)
+                }
             }
         }
 
     }
 
-    private fun playNextAudio() {
-        //play next song
-        homeViewModel.currentlyPlayingSongAtPos += 1
-        if (homeViewModel.myCollection.size <= homeViewModel.currentlyPlayingSongAtPos)
-            homeViewModel.currentlyPlayingSongAtPos = 0
-        playAudio()
+    private fun initAudioPlayer(){
+        if(audioPlayerView.player == null)
+            audioPlayerView.player = audioService.getPlayer()
 
+        if(!audioService.listenerIsSet)
+            audioService.setListener(audioPlaybackStateListener)
     }
 
-
-    private fun playPrevAudio() {
-
-        homeViewModel.currentlyPlayingSongAtPos -= 1
-        if (homeViewModel.currentlyPlayingSongAtPos < 0) {
-            homeViewModel.currentlyPlayingSongAtPos = homeViewModel.myCollection.size - 1
-        }
-
-        if (homeViewModel.myCollection.size > homeViewModel.currentlyPlayingSongAtPos) {
-            playAudio()
-        }
-
-    }
 
     override fun onResume() {
         super.onResume()
@@ -391,27 +384,24 @@ class HomeFragment : Fragment(), RecommendedListAdapter.RecommendedItemClickList
     }
 
 
-    override fun onPause() {
-        super.onPause()
-        if (Util.SDK_INT < 24) {
-            releasePlayer()
-        }
+    override fun onStart() {
+        super.onStart()
+        startAndBindToAudioService()
     }
 
     override fun onStop() {
         super.onStop()
-        if (Util.SDK_INT >= 24) {
-            releasePlayer()
+        if(audioServiceIsBound) {
+            audioService.removeListener(audioPlaybackStateListener)
         }
     }
 
-    private fun releasePlayer() {
-        if(audioPlayer != null) {
-            audioPlayer!!.release()
-            audioPlayer = null
-        }
-    }
 
+    override fun onDestroy() {
+        super.onDestroy()
+        context!!.unbindService(audioServiceConnection)
+        audioServiceIsBound = false
+    }
 
 
 }
