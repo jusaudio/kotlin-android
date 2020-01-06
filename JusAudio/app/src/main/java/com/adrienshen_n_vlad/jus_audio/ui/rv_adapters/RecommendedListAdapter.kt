@@ -9,6 +9,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.adrienshen_n_vlad.jus_audio.R
 import com.adrienshen_n_vlad.jus_audio.persistence.entities.JusAudios
+import com.bumptech.glide.Glide
 
 class RecommendedListAdapter(
     private val recommendedItems: ArrayList<JusAudios>,
@@ -60,11 +61,11 @@ class RecommendedListAdapter(
             itemView.findViewById<ImageView>(R.id.toggle_in_collection_iv)
 
         fun bindData(recommendedItem: JusAudios) {
-            /*todo Glide.with(itemView.context)
-                 .load(recommendedItem.audioCoverThumbnailUrl)
-                 .placeholder(R.drawable.ic_music_note_black)
-                 .error(R.drawable.ic_music_note_black)
-                 .into(audioCoverIv) */
+           /* Glide.with(itemView.context)
+                .load(recommendedItem.audioCoverThumbnailUrl)
+                .placeholder(R.drawable.ic_music_note_black_24dp)
+                .error(R.drawable.ic_music_note_black_24dp)
+                .into(audioCoverIv)*/
 
             audioTitleTv.text = recommendedItem.audioTitle
             audioAuthorTv.text = recommendedItem.audioAuthor

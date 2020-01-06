@@ -9,6 +9,7 @@ import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.adrienshen_n_vlad.jus_audio.R
 import com.adrienshen_n_vlad.jus_audio.persistence.entities.JusAudios
+import com.bumptech.glide.Glide
 
 class SearchResultsAdapter(
     private val foundItems: ArrayList<JusAudios>,
@@ -60,11 +61,11 @@ class SearchResultsAdapter(
             itemView.findViewById<ImageView>(R.id.add_or_remove_collection)
 
         fun bindData(foundItem: JusAudios) {
-            /*todo Glide.with(itemView.context)
+            Glide.with(itemView.context)
                 .load(foundItem.audioCoverThumbnailUrl)
-                .placeholder(R.drawable.ic_music_note_black)
-                .error(R.drawable.ic_music_note_black)
-                .into(audioCoverIv)*/
+                .placeholder(R.drawable.ic_music_note_black_24dp)
+                .error(R.drawable.ic_music_note_black_24dp)
+                .into(audioCoverIv)
 
             audioTitleTv.text = foundItem.audioTitle
             audioAuthorTv.text = foundItem.audioAuthor

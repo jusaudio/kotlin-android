@@ -100,13 +100,14 @@ class AudioPlayerService : Service() {
 
     fun getTitleAndAuthor(): Array<String> {
         val currentlyPlaying = playList[audioPlayer!!.currentWindowIndex]
+        Log.d(LOG_TAG, currentlyPlaying.audioTitle + " " + currentlyPlaying.audioAuthor)
         return arrayOf(currentlyPlaying.audioTitle, currentlyPlaying.audioAuthor)
     }
 
 
     private fun buildMediaSource(audioUrlStr: String): MediaSource? {
-        //todo use real audioUrlStr
-        val uri = Uri.parse(getString(R.string.dummy_audio_url))
+        Log.d(LOG_TAG, "building media source for $audioUrlStr")
+        val uri = Uri.parse(audioUrlStr)
 
         return ProgressiveMediaSource.Factory(
             DefaultDataSourceFactory(
@@ -171,7 +172,8 @@ class AudioPlayerService : Service() {
 
     fun playAudioInPlayList(audio: JusAudios) {
         val index = playList.indexOf(audio)
-        audioPlayer!!.seekTo(index, C.TIME_UNSET) //does not seem to work
+        Log.d( LOG_TAG, "playAudioInPlayList() at $index ${audio.audioTitle}")
+        audioPlayer!!.seekTo(index, C.TIME_UNSET)
         preparePlayListAndNotifyUser()
     }
 
@@ -221,11 +223,13 @@ class AudioPlayerService : Service() {
         releasePlayer()
     }
 
-    private fun releasePlayer() {
+    fun releasePlayer() {
         if (audioPlayer != null) {
+            audioPlayer!!.stop()
             audioPlayer!!.release()
             audioPlayer = null
         }
+        stopSelf()
     }
 
     fun getPlayer(): Player? =  audioPlayer

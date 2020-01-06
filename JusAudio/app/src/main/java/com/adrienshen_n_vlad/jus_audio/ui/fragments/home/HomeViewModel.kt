@@ -5,8 +5,8 @@ import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.adrienshen_n_vlad.jus_audio.JusAudioApp
 import com.adrienshen_n_vlad.jus_audio.background_work.DoFunAsync
+import com.adrienshen_n_vlad.jus_audio.interfaces.AsyncResultListener
 import com.adrienshen_n_vlad.jus_audio.persistence.entities.JusAudios
 import com.adrienshen_n_vlad.jus_audio.repository.AudioDataRepository
 import com.adrienshen_n_vlad.jus_audio.utility_classes.JusAudioConstants.QUERY_LIMIT
@@ -17,7 +17,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
 
     private val audioDataRepository: AudioDataRepository by lazy {
-        (application.applicationContext as JusAudioApp).audioDataRepository!!
+        AudioDataRepository.getInstance(application.applicationContext)
     }
 
 
@@ -47,9 +47,6 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     private var offsetRecommendedListBy = 0
     private var offsetMyCollectionBy = 0
 
-
-    var currentlyPlayingSongAtPos: Int = 0
-
     init {
         loadRecommendedAudios()
 
@@ -61,8 +58,8 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         if (recommendedList.size == offsetMyCollectionBy) {
 
             Log.d(LOG_TAG, "loadRecommended() loading")
-            val resultCallback = object : DoFunAsync.AsyncOperationListener {
-                override fun onCompleted(isSuccessful: Boolean, dataFetched: Any?) {
+            val resultCallback = object : AsyncResultListener {
+                override fun onCompleted(isSuccessful: Boolean, dataFetched: Any?, dataIsToBeSavedLocally : Boolean) {
                     if (isSuccessful) {
                         offsetRecommendedListBy += QUERY_LIMIT
                         if (dataFetched != null && dataFetched is ArrayList<*> && dataFetched.size > 0) {
@@ -104,8 +101,8 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
             Log.d(LOG_TAG, "loadMyCollection() loading")
 
-            val resultCallback = object : DoFunAsync.AsyncOperationListener {
-                override fun onCompleted(isSuccessful: Boolean, dataFetched: Any?) {
+            val resultCallback = object : AsyncResultListener{
+                override fun onCompleted(isSuccessful: Boolean, dataFetched: Any?, dataIsToBeSavedLocally : Boolean) {
                     if (isSuccessful) {
                         offsetMyCollectionBy += QUERY_LIMIT
                         if (dataFetched != null && dataFetched is ArrayList<*> && dataFetched.size > 0) {
@@ -236,8 +233,8 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         )
         Log.d(LOG_TAG, "reloadMyCollection() loading")
         val limit = QUERY_LIMIT + myCollection.size
-        val resultCallback = object : DoFunAsync.AsyncOperationListener {
-            override fun onCompleted(isSuccessful: Boolean, dataFetched: Any?) {
+        val resultCallback = object : AsyncResultListener{
+            override fun onCompleted(isSuccessful: Boolean, dataFetched: Any?, dataIsToBeSavedLocally : Boolean) {
                 if (isSuccessful) {
                     if (dataFetched != null && dataFetched is ArrayList<*> && dataFetched.size > 0) {
                         myCollection.clear()
@@ -266,9 +263,6 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         myCollectionState.value = DataState.LOADING
     }
 
-    fun setCurrentlyPlayingFromAudioPos(clickedAudio: JusAudios) {
-        currentlyPlayingSongAtPos = myCollection.indexOf(clickedAudio)
-    }
 
 
 }

@@ -11,7 +11,6 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -95,7 +94,6 @@ class HomeFragment : Fragment(), RecommendedListAdapter.RecommendedItemClickList
         audioTitleTv = view.findViewById(R.id.audio_title_tv)
         audioAuthorTv = view.findViewById(R.id.audio_author_tv)
         audioPlayerHintTv = view.findViewById(R.id.audio_player_hint_tv)
-        view.findViewById<ImageButton>(R.id.exo_play).setOnClickListener { playAudio() }
 
 
         val audioPlayerBottomSheet =
@@ -257,8 +255,7 @@ class HomeFragment : Fragment(), RecommendedListAdapter.RecommendedItemClickList
 
 
     override fun onPlayIconClicked(clickedAudio: JusAudios) {
-        homeViewModel.setCurrentlyPlayingFromAudioPos(clickedAudio)
-        playAudio()
+        playAudio(clickedAudio)
     }
 
 
@@ -266,8 +263,6 @@ class HomeFragment : Fragment(), RecommendedListAdapter.RecommendedItemClickList
     private val audioPlaybackStateListener: Player.EventListener by lazy {
         object : Player.EventListener {
             override fun onPositionDiscontinuity(@Player.DiscontinuityReason reason: Int) {
-                audioTitleTv.text = audioService.getTitleAndAuthor()[0]
-                audioAuthorTv.text = audioService.getTitleAndAuthor()[0]
                 Log.d(LOG_TAG, "audioPBackStateListener - onPositionDiscontinuity $reason")
             }
 
@@ -277,12 +272,14 @@ class HomeFragment : Fragment(), RecommendedListAdapter.RecommendedItemClickList
                         audioPlayerHintTv.setText(R.string.app_name)
                     }
                     ExoPlayer.STATE_BUFFERING -> {
+                        setOrClearAudioMetaData()
                         audioPlayerHintTv.setText(R.string.buffering_txt)
                     }
                     ExoPlayer.STATE_READY -> {
                         audioPlayerHintTv.setText(R.string.now_playing_txt)
                     }
                     ExoPlayer.STATE_ENDED -> {
+                        setOrClearAudioMetaData(clear = true)
                         audioPlayerHintTv.setText(R.string.app_name)
                     }
                     else -> {
@@ -305,6 +302,20 @@ class HomeFragment : Fragment(), RecommendedListAdapter.RecommendedItemClickList
 
 
     }
+
+
+    private fun setOrClearAudioMetaData(clear : Boolean = false){
+        if(!clear) {
+            audioTitleTv.text = audioService.getTitleAndAuthor()[0]
+            audioAuthorTv.text = audioService.getTitleAndAuthor()[0]
+        }
+        else
+        {
+            audioTitleTv.text = ""
+            audioAuthorTv.text = ""
+        }
+    }
+
     private fun startAndBindToAudioService(){
         if (!audioServiceIsBound) {
             Intent(context!!, AudioPlayerService::class.java).also { intent ->
@@ -345,14 +356,12 @@ class HomeFragment : Fragment(), RecommendedListAdapter.RecommendedItemClickList
     }
 
 
-    private fun playAudio() {
+    private fun playAudio(audioToPlay : JusAudios) {
         if(audioServiceIsBound) {
 
             initAudioPlayer()
             if( homeViewModel.myCollection.size > 0 ) {
                 try {
-                    val audioToPlay =
-                        homeViewModel.myCollection[homeViewModel.currentlyPlayingSongAtPos]
                     expandBottomPlayer()
 
                     Log.d(LOG_TAG, "playingAudio with exo player ${audioToPlay.audioTitle}")
@@ -375,15 +384,6 @@ class HomeFragment : Fragment(), RecommendedListAdapter.RecommendedItemClickList
     }
 
 
-    override fun onResume() {
-        super.onResume()
-        if(homeViewModel.observeMyCollectionState().value == HomeViewModel.DataState.LOADED)
-            homeViewModel.reloadMyCollection()
-        else
-            Log.d( LOG_TAG,"Resumed " +   homeViewModel.observeMyCollectionState().value.toString() )
-    }
-
-
     override fun onStart() {
         super.onStart()
         startAndBindToAudioService()
@@ -401,6 +401,7 @@ class HomeFragment : Fragment(), RecommendedListAdapter.RecommendedItemClickList
         super.onDestroy()
         context!!.unbindService(audioServiceConnection)
         audioServiceIsBound = false
+        audioService.releasePlayer()
     }
 
 

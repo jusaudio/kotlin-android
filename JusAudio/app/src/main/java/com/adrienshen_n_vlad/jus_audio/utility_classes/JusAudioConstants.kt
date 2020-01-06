@@ -3,6 +3,7 @@ package com.adrienshen_n_vlad.jus_audio.utility_classes
 object JusAudioConstants {
 
     //searching
+    const val API_KEY = "AIzaSyDTjccLDq4Bg_radjrl00eV8Xw2rIfwvFs"
     const val QUERY_LIMIT = 10
     const val SEARCH_QUERY_TXT_MIN_LENGTH = 3 //minimal text in query to start searching
 
