@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "666584014778",
+    "firebase_url": "https://jusaudio-7a9b0.firebaseio.com",
+    "project_id": "jusaudio-7a9b0",
+    "storage_bucket": "jusaudio-7a9b0.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:666584014778:android:ead1690be5079e84854783",
+        "android_client_info": {
+          "package_name": "com.jusaudio.player"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "666584014778-9f167im6ceqc1s56h52b07qomc4isiv2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyABPBF5IucU47xIlkNvnU77jHPH2bDgdJ4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "666584014778-9f167im6ceqc1s56h52b07qomc4isiv2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
