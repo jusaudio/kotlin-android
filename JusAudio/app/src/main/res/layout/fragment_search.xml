@@ -6,7 +6,7 @@
     android:clipToPadding="false"
     android:orientation="vertical"
     android:padding="@dimen/padding_std"
-    tools:context=".ui.fragments.search.SearchFragment">
+    tools:context="com.curiolabs.jusaudio.ui.fragments.search.SearchFragment">
 
     <EditText
         android:id="@+id/search_bar_et"

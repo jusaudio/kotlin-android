@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.adrienshen_n_vlad.jus_audio.ui.fragments.home.HomeFragment">
+    tools:context="com.adrienshen_n_vlad.jus_audio.com.curiolabs.jusaudio.ui.fragments.home.HomeFragment">
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
